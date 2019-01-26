@@ -67915,7 +67915,7 @@ function (_Component) {
           username = _this$state.username,
           password = _this$state.password;
 
-      _axios.default.post('http://localhost:1234/api/auth/register', {
+      _axios.default.post('http://localhost:3000/api/auth/register', {
         username: username,
         password: password
       }).then(function (result) {

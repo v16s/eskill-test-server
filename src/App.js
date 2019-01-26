@@ -1,8 +1,8 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 
-class App extends Component {
+class App extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
@@ -15,7 +15,7 @@ class App extends Component {
       'jwtToken'
     )
     axios
-      .get('/api/book')
+      .get('http://localhost:3000/api/book')
       .then(res => {
         this.setState({ books: res.data })
         console.log(this.state.books)

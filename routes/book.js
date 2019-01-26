@@ -5,7 +5,7 @@ var Book = require('../models/Book.js')
 var passport = require('passport')
 require('../config/passport')(passport)
 
-let getToken = (headers) => {
+let getToken = headers => {
   if (headers && headers.authorization) {
     var parted = headers.authorization.split(' ')
     if (parted.length === 2) {

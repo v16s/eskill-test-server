@@ -31,6 +31,7 @@
   },
   "scripts": {
     "build": "parcel build ./src/index.html --out-dir build",
+    "client": "parcel ./src/index.html --open",
     "start": "node ./bin/www "
   }
 }

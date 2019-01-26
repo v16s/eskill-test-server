@@ -35,9 +35,11 @@
   "scripts": {
     "build": "parcel build ./src/index.html --out-dir build",
     "client": "parcel ./src/index.html --open",
-    "start": "node ./bin/www "
+    "start": "node ./bin/www ",
+    "test": "nodemon -w ./server/ -x babel-node server/app.js"
   },
   "devDependencies": {
-    "babel-plugin-import": "^1.11.0"
+    "babel-plugin-import": "^1.11.0",
+    "nodemon": "^1.18.9"
   }
 }

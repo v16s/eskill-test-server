@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
-import './Login.css'
+import { Form, Icon, Input, Button, Checkbox } from 'antd'
 
 class Login extends Component {
   constructor () {
@@ -25,7 +25,7 @@ class Login extends Component {
     const { username, password } = this.state
 
     axios
-      .post('/api/auth/login', { username, password })
+      .post('http://localhost:3000/api/auth/login', { username, password })
       .then(result => {
         localStorage.setItem('jwtToken', result.data.token)
         this.setState({ message: '' })
@@ -43,49 +43,61 @@ class Login extends Component {
   render () {
     const { username, password, message } = this.state
     return (
-      <div class='container'>
-        <form class='form-signin' onSubmit={this.onSubmit}>
-          {message !== '' && (
-            <div class='alert alert-warning alert-dismissible' role='alert'>
-              {message}
-            </div>
-          )}
-          <h2 class='form-signin-heading'>Please sign in</h2>
-          <label for='inputEmail' class='sr-only'>
-            Email address
-          </label>
-          <input
-            type='email'
-            class='form-control'
-            placeholder='Email address'
-            name='username'
-            value={username}
-            onChange={this.onChange}
-            required
-          />
-          <label for='inputPassword' class='sr-only'>
-            Password
-          </label>
-          <input
-            type='password'
-            class='form-control'
-            placeholder='Password'
-            name='password'
-            value={password}
-            onChange={this.onChange}
-            required
-          />
-          <button class='btn btn-lg btn-primary btn-block' type='submit'>
-            Login
-          </button>
-          <p>
-            Not a member?{' '}
-            <Link to='/register'>
-              <span class='glyphicon glyphicon-plus-sign' aria-hidden='true' />{' '}
-              Register here
-            </Link>
-          </p>
-        </form>
+      <div
+        style={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          minHeight: '100vh'
+        }}
+      >
+        <Form
+          style={{
+            maxWidth: '350px',
+            alignSelf: 'center',
+            border: '1px solid #ddd',
+            padding: '25px',
+            borderRadius: '4px'
+          }}
+          onSubmit={this.onSubmit}
+          className='login-form'
+        >
+          <Form.Item>
+            <Input
+              prefix={<Icon type='user' style={{ color: 'rgba(0,0,0,.25)' }} />}
+              name='username'
+              onChange={this.onChange}
+              value={username}
+              placeholder='Username'
+            />
+          </Form.Item>
+          <Form.Item>
+            <Input
+              prefix={<Icon type='lock' style={{ color: 'rgba(0,0,0,.25)' }} />}
+              name='password'
+              onChange={this.onChange}
+              value={password}
+              type='password'
+              placeholder='Password'
+            />
+          </Form.Item>
+          <Form.Item>
+            <a className='login-form-forgot' href=''>
+              Forgot password
+            </a>
+            <Button
+              type='primary'
+              htmlType='submit'
+              className='login-form-button'
+              style={{
+                width: '100%'
+              }}
+            >
+              Log in
+            </Button>
+            Or <Link to='/register'>register now!</Link>
+          </Form.Item>
+        </Form>
       </div>
     )
   }

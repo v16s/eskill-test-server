@@ -39,8 +39,8 @@ var mongoose = require('mongoose')
 mongoose.Promise = require('bluebird')
 mongoose
   .connect(
-    'mongodb://localhost/mern-secure',
-    { promiseLibrary: require('bluebird') }
+    require('./config.json').dburl,
+    { promiseLibrary: require('bluebird'), useNewUrlParser: true }
   )
   .then(() => console.log('connection succesful'))
   .catch(err => console.error(err))

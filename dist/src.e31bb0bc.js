@@ -48845,7 +48845,7 @@ var global = module.exports = typeof window != 'undefined' && window.Math == Mat
 if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
 
 },{}],"../node_modules/core-js/library/modules/_core.js":[function(require,module,exports) {
-var core = module.exports = { version: '2.6.2' };
+var core = module.exports = { version: '2.6.3' };
 if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 
 },{}],"../node_modules/core-js/library/modules/_a-function.js":[function(require,module,exports) {
@@ -67829,12 +67829,7 @@ function (_Component) {
 
 var _default = Login;
 exports.default = _default;
-},{"antd/lib/button/style":"../node_modules/antd/lib/button/style/index.js","antd/lib/button":"../node_modules/antd/lib/button/index.js","antd/lib/form/style":"../node_modules/antd/lib/form/style/index.js","antd/lib/form":"../node_modules/antd/lib/form/index.js","antd/lib/input/style":"../node_modules/antd/lib/input/style/index.js","antd/lib/input":"../node_modules/antd/lib/input/index.js","antd/lib/icon/style":"../node_modules/antd/lib/icon/style/index.js","antd/lib/icon":"../node_modules/antd/lib/icon/index.js","react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","axios":"../node_modules/axios/index.js","react-router-dom":"../node_modules/react-router-dom/es/index.js"}],"components/Login.css":[function(require,module,exports) {
-var reloadCSS = require('_css_loader');
-
-module.hot.dispose(reloadCSS);
-module.hot.accept(reloadCSS);
-},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"components/Register.js":[function(require,module,exports) {
+},{"antd/lib/button/style":"../node_modules/antd/lib/button/style/index.js","antd/lib/button":"../node_modules/antd/lib/button/index.js","antd/lib/form/style":"../node_modules/antd/lib/form/style/index.js","antd/lib/form":"../node_modules/antd/lib/form/index.js","antd/lib/input/style":"../node_modules/antd/lib/input/style/index.js","antd/lib/input":"../node_modules/antd/lib/input/index.js","antd/lib/icon/style":"../node_modules/antd/lib/icon/style/index.js","antd/lib/icon":"../node_modules/antd/lib/icon/index.js","react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","axios":"../node_modules/axios/index.js","react-router-dom":"../node_modules/react-router-dom/es/index.js"}],"components/Register.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -67865,8 +67860,6 @@ var _reactDom = _interopRequireDefault(require("react-dom"));
 var _axios = _interopRequireDefault(require("axios"));
 
 var _reactRouterDom = require("react-router-dom");
-
-require("./Login.css");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
@@ -67915,7 +67908,7 @@ function (_Component) {
           username = _this$state.username,
           password = _this$state.password;
 
-      _axios.default.post('http://localhost:1234/api/auth/register', {
+      _axios.default.post('http://localhost:3000/api/auth/register', {
         username: username,
         password: password
       }).then(function (result) {
@@ -67952,7 +67945,7 @@ function (_Component) {
           borderRadius: '4px'
         },
         onSubmit: this.onSubmit,
-        className: "login-form"
+        className: "register-form"
       }, _react.default.createElement(_form.default.Item, null, _react.default.createElement(_input.default, {
         prefix: _react.default.createElement(_icon.default, {
           type: "user",
@@ -67976,19 +67969,14 @@ function (_Component) {
         value: password,
         type: "password",
         placeholder: "Password"
-      })), _react.default.createElement(_form.default.Item, null, _react.default.createElement("a", {
-        className: "login-form-forgot",
-        href: ""
-      }, "Forgot password"), _react.default.createElement(_button.default, {
+      })), _react.default.createElement(_form.default.Item, null, _react.default.createElement(_button.default, {
         type: "primary",
         htmlType: "submit",
         className: "login-form-button",
         style: {
           width: '100%'
         }
-      }, "Log in"), "Or ", _react.default.createElement("a", {
-        href: ""
-      }, "register now!"))));
+      }, "Register"))));
     }
   }]);
 
@@ -67997,7 +67985,7 @@ function (_Component) {
 
 var _default = Create;
 exports.default = _default;
-},{"antd/lib/button/style":"../node_modules/antd/lib/button/style/index.js","antd/lib/button":"../node_modules/antd/lib/button/index.js","antd/lib/form/style":"../node_modules/antd/lib/form/style/index.js","antd/lib/form":"../node_modules/antd/lib/form/index.js","antd/lib/input/style":"../node_modules/antd/lib/input/style/index.js","antd/lib/input":"../node_modules/antd/lib/input/index.js","antd/lib/icon/style":"../node_modules/antd/lib/icon/style/index.js","antd/lib/icon":"../node_modules/antd/lib/icon/index.js","react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","axios":"../node_modules/axios/index.js","react-router-dom":"../node_modules/react-router-dom/es/index.js","./Login.css":"components/Login.css"}],"index.js":[function(require,module,exports) {
+},{"antd/lib/button/style":"../node_modules/antd/lib/button/style/index.js","antd/lib/button":"../node_modules/antd/lib/button/index.js","antd/lib/form/style":"../node_modules/antd/lib/form/style/index.js","antd/lib/form":"../node_modules/antd/lib/form/index.js","antd/lib/input/style":"../node_modules/antd/lib/input/style/index.js","antd/lib/input":"../node_modules/antd/lib/input/index.js","antd/lib/icon/style":"../node_modules/antd/lib/icon/style/index.js","antd/lib/icon":"../node_modules/antd/lib/icon/index.js","react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","axios":"../node_modules/axios/index.js","react-router-dom":"../node_modules/react-router-dom/es/index.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
 var _react = _interopRequireDefault(require("react"));
@@ -68056,7 +68044,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57832" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "3788" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);

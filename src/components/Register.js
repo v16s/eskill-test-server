@@ -2,8 +2,6 @@ import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
-import './Login.css'
-
 import { Form, Icon, Input, Button, Checkbox } from 'antd'
 
 class Create extends Component {
@@ -26,7 +24,7 @@ class Create extends Component {
     const { username, password } = this.state
 
     axios
-      .post('http://localhost:1234/api/auth/register', { username, password })
+      .post('http://localhost:3000/api/auth/register', { username, password })
       .then(result => {
         this.props.history.push('/register')
       })
@@ -52,7 +50,7 @@ class Create extends Component {
             borderRadius: '4px'
           }}
           onSubmit={this.onSubmit}
-          className='login-form'
+          className='register-form'
         >
           <Form.Item>
             <Input
@@ -74,9 +72,6 @@ class Create extends Component {
             />
           </Form.Item>
           <Form.Item>
-            <a className='login-form-forgot' href=''>
-              Forgot password
-            </a>
             <Button
               type='primary'
               htmlType='submit'
@@ -85,9 +80,8 @@ class Create extends Component {
                 width: '100%'
               }}
             >
-              Log in
+              Register
             </Button>
-            Or <a href=''>register now!</a>
           </Form.Item>
         </Form>
       </div>

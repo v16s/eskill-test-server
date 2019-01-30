@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
-import { Form, Icon, Input, Button, Checkbox } from 'antd'
+import { Form, Icon, Input, Button,Layout, Menu, Breadcrumb } from 'antd'
+const { Header, Content, Footer } = Layout;
 
 class Login extends Component {
   constructor () {
@@ -43,6 +44,21 @@ class Login extends Component {
   render () {
     const { username, password, message } = this.state
     return (
+     <Layout> 
+      <Header style={{ position: 'fixed', zIndex: 1, width: '100%' }}>
+      <div className="logo" />
+      <Menu
+        theme="dark"
+        mode="horizontal"
+        defaultSelectedKeys={['3']}
+        style={{ lineHeight: '120px' }}
+      >
+      </Menu>
+      <h1
+        style={{
+         color: 'white'
+       }}>Login</h1>
+    </Header>
       <div
         style={{
           width: '100%',
@@ -55,7 +71,7 @@ class Login extends Component {
           style={{
             maxWidth: '350px',
             alignSelf: 'center',
-            border: '1px solid #ddd',
+            border: '3px solid #0F618B',
             padding: '25px',
             borderRadius: '4px'
           }}
@@ -99,6 +115,7 @@ class Login extends Component {
           </Form.Item>
         </Form>
       </div>
+      </Layout>
     )
   }
 }

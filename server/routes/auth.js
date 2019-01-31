@@ -8,17 +8,15 @@ var router = express.Router()
 var User = require('../models/user')
 
 router.post('/register', function (req, res) {
-  if (!req.body.username || !req.body.password) {
-    res.json({ success: false, msg: 'Please pass username and password.' })
+  let { regNumber, password, field, college, email, fullName } = req.body
+  if (!regNumber || !password || !field || !college || !email || !fullName) {
+    res.json({ success: false, msg: 'Please pass regNumber and password.' })
   } else {
-    var newUser = new User({
-      username: req.body.username,
-      password: req.body.password
-    })
+    var newUser = new User(req.body)
     // save the user
     newUser.save(function (err) {
       if (err) {
-        return res.json({ success: false, msg: 'Username already exists.' })
+        return res.json({ success: false, msg: 'regNumber already exists.' })
       }
       res.json({ success: true, msg: 'Successful created new user.' })
     })
@@ -28,7 +26,7 @@ router.post('/register', function (req, res) {
 router.post('/login', function (req, res) {
   User.findOne(
     {
-      username: req.body.username
+      regNumber: req.body.regNumber
     },
     function (err, user) {
       if (err) throw err

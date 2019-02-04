@@ -24,17 +24,17 @@ router.post('/', passport.authenticate('jwt', { session: false }), function (
 ) {
   console.log(req.body)
   console.log('hello')
-  // var token = getToken(req.headers)
-  // if (token) {
-  //   createTest.create(req.body, function (err, post) {
-  //     if (err) {
-  //       return res.send(err)
-  //     }
-  //     res.json(post.body)
-  //   })
-  // } else {
-  //   return res.status(403).send({ success: false, msg: 'Unauthorized.' })
-  // }
+  var token = getToken(req.headers)
+  if (token) {
+    createTest.create(req.body, function (err, post) {
+      if (err) {
+        return res.send(err)
+      }
+      res.json(post.body)
+    })
+  } else {
+    return res.status(403).send({ success: false, msg: 'Unauthorized.' })
+  }
 })
 
 module.exports = router

@@ -22,8 +22,6 @@ router.post('/', passport.authenticate('jwt', { session: false }), function (
   req,
   res
 ) {
-  console.log(req.body)
-  console.log('hello')
   var token = getToken(req.headers)
   if (token) {
     createTest.create(req.body, function (err, post) {

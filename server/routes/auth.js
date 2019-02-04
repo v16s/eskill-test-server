@@ -6,6 +6,7 @@ var express = require('express')
 var jwt = require('jsonwebtoken')
 var router = express.Router()
 var User = require('../models/user')
+var Test = require('../models/createTest')
 
 router.post('/register', function (req, res) {
   let { regNumber, password, field, college, email, fullName } = req.body
@@ -17,6 +18,22 @@ router.post('/register', function (req, res) {
     newUser.save(function (err) {
       if (err) {
         return res.json({ success: false, msg: 'regNumber already exists.' })
+      }
+      res.json({ success: true, msg: 'Successful created new user.' })
+    })
+  }
+})
+
+router.post('/createTest', function (req, res) {
+  let { branch, course, totTime, totQues } = req.body
+  if (!branch || !course || !totQues || !totTime) {
+    res.json({ success: false, msg: 'Please pass values for the fields.' })
+  } else {
+    var newTest = new Test(req.body)
+    // save the user
+    newTest.save(function (err) {
+      if (err) {
+        return res.json({ success: false, msg: 'Test already exists.' })
       }
       res.json({ success: true, msg: 'Successful created new user.' })
     })

@@ -1,4 +1,6 @@
 var mongoose = require('mongoose')
+var Schema = mongoose.Schema
+var bcrypt = require('bcrypt-nodejs')
 var createTestSchema = new mongoose.Schema({
   chooseQue: String,
   branch: { type: String, required: true },

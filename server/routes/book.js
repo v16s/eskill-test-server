@@ -25,10 +25,7 @@ router.get('/', passport.authenticate('jwt', { session: false }), function (
 ) {
   var token = getToken(req.headers)
   if (token) {
-    Book.find(function (err, books) {
-      if (err) return next(err)
-      res.json(books)
-    })
+    res.status(200).send({ success: true, user: req.user })
   } else {
     return res.status(403).send({ success: false, msg: 'Unauthorized.' })
   }

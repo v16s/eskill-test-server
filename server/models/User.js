@@ -8,6 +8,7 @@ var UserSchema = new Schema({
   fullName: { type: String, required: true },
   college: { type: String, required: true },
   field: { type: String, required: true },
+  dob: { type: Date, required: false, default: '' },
   email: { type: String, required: true },
   createdDate: { type: Date, default: Date.now },
   isAdmin: { type: Number, default: 0 }

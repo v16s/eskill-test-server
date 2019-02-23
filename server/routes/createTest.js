@@ -18,6 +18,18 @@ let getToken = headers => {
   }
 }
 
+router.get('/', passport.authenticate('jwt', { session: false }), function (
+  req,
+  res
+) {
+  var token = getToken(req.headers)
+  if (token) {
+    res.status(200).send({ success: true, user: req.user })
+  } else {
+    return res.status(403).send({ success: false, msg: 'Unauthorized.' })
+  }
+})
+
 router.post('/', passport.authenticate('jwt', { session: false }), function (
   req,
   res

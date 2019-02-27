@@ -27,22 +27,6 @@ router.post('/register', function (req, res) {
   }
 })
 
-router.get('/createTest', function (req, res) {
-  let { totTime, testID } = req.body
-  if (!totTime || !testID) {
-    res.json({ success: false, msg: 'Time doesnt exist for test.' })
-  } else {
-    var TestGet = new Test(req.body)
-    // save the user
-    TestGet.save(function (err) {
-      if (err) {
-        return res.json({ success: false, msg: 'Test already exists.' })
-      }
-      res.json({ success: true, msg: 'Successful created new user.' })
-    })
-  }
-})
-
 router.post('/createTest', function (req, res) {
   let { branch, course, totTime, totQues, testID } = req.body
   if (!branch || !course || !totQues || !totTime || !testID) {
@@ -50,18 +34,36 @@ router.post('/createTest', function (req, res) {
   } else {
     var newTest = new Test(req.body)
     // save the user
-    newTest.save(function (err) {
+    newTest.save(function (err, newT) {
       if (err) {
         return res.json({ success: false, msg: 'Test already exists.' })
       }
-      res.json({ success: true, msg: 'Successful created new user.' })
+      res.json({ success: true, test: newT })
     })
   }
 })
 
 router.post('/testReport', function (req, res) {
-  let { status } = req.body
-  if (!status) {
+  let {
+    regNumber,
+    status,
+    branch,
+    course,
+    totTime,
+    totQues,
+    testID,
+    startTime
+  } = req.body
+  if (
+    !status ||
+    !branch ||
+    !course ||
+    !totQues ||
+    !totTime ||
+    !testID ||
+    !startTime ||
+    !regNumber
+  ) {
     res.json({ success: false, msg: 'Please pass values for the fields.' })
   } else {
     var newReport = new Report(req.body)

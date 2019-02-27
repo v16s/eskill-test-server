@@ -8,6 +8,19 @@ var router = express.Router()
 var User = require('../models/user')
 var Test = require('../models/createTest')
 var Report = require('../models/testReport')
+var app = express()
+const axios = require('axios')
+
+// axios.get('createTest/:testID/:totTime', function (req, res) {
+//   db.createtests.findOne(
+//     {
+//       testID: '1'
+//     },
+//     {
+//       totTime: 1
+//     }
+//   )
+// })
 
 router.post('/register', function (req, res) {
   let { regNumber, password, field, college, email, fullName } = req.body
@@ -25,22 +38,6 @@ router.post('/register', function (req, res) {
   }
 })
 
-router.get('/createTest', function (req, res) {
-  let { totTime, testID } = req.body
-  if (!totTime || !testID) {
-    res.json({ success: false, msg: 'Time doesnt exist for test.' })
-  } else {
-    var TestGet = new Test(req.body)
-    // save the user
-    TestGet.save(function (err) {
-      if (err) {
-        return res.json({ success: false, msg: 'Test already exists.' })
-      }
-      res.json({ success: true, msg: 'Successful created new user.' })
-    })
-  }
-})
-
 router.post('/createTest', function (req, res) {
   let { branch, course, totTime, totQues, testID } = req.body
   if (!branch || !course || !totQues || !totTime || !testID) {
@@ -48,18 +45,36 @@ router.post('/createTest', function (req, res) {
   } else {
     var newTest = new Test(req.body)
     // save the user
-    newTest.save(function (err) {
+    newTest.save(function (err, newT) {
       if (err) {
         return res.json({ success: false, msg: 'Test already exists.' })
       }
-      res.json({ success: true, msg: 'Successful created new user.' })
+      res.json({ success: true, test: newT })
     })
   }
 })
 
 router.post('/testReport', function (req, res) {
-  let { status } = req.body
-  if (!status) {
+  let {
+    regNumber,
+    status,
+    branch,
+    course,
+    totTime,
+    totQues,
+    testID,
+    startTime
+  } = req.body
+  if (
+    !status ||
+    !branch ||
+    !course ||
+    !totQues ||
+    !totTime ||
+    !testID ||
+    !startTime ||
+    !regNumber
+  ) {
     res.json({ success: false, msg: 'Please pass values for the fields.' })
   } else {
     var newReport = new Report(req.body)
@@ -69,6 +84,35 @@ router.post('/testReport', function (req, res) {
         return res.json({ success: false, msg: 'Test already exists.' })
       }
       res.json({ success: true, msg: 'Successful created new user.' })
+    })
+  }
+})
+
+router.post('/updatetime', function (req, res) {
+  let { regNumber, totTime } = req.body
+  if (!totTime || !regNumber) {
+    res.json({ success: false, msg: 'Please pass values for the fields.' })
+  } else {
+    Report.findOne({ regNumber: req.body.regNumber }, (err, doc) => {
+      doc.totTime = totTime
+      console.log(doc.totTime)
+      doc.save(function (err) {
+        if (err) {
+          return res.json({ success: false, msg: 'Test already exists.' })
+        }
+        res.json({ success: true, msg: 'Successful created new user.' })
+      })
+    })
+  }
+})
+
+router.post('/gettime', function (req, res) {
+  let { regNumber, testID } = req.body
+  if (!testID || !regNumber) {
+    res.json({ success: false, msg: 'couldnt retrieve.' })
+  } else {
+    Report.findOne({ testID: req.body.testID }, (err, doc) => {
+      res.send({ totTime: doc.totTime })
     })
   }
 })

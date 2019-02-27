@@ -5,6 +5,7 @@ var logger = require('morgan')
 var bodyParser = require('body-parser')
 var createTest = require('./routes/createTest')
 var book = require('./routes/book')
+var testReport = require('./routes/testReport')
 var auth = require('./routes/auth')
 var cors = require('cors')
 var app = express()
@@ -13,7 +14,10 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: 'false' }))
 app.use(express.static(path.join(__dirname, 'build')))
 app.use('/api/book', book)
+app.use('/api/testReport', testReport)
 app.use('/api/createTest', createTest)
+app.use('/api/updatetime', testReport)
+app.use('/api/gettime', testReport)
 
 // catch 404 and forward to error handler
 

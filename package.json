@@ -35,7 +35,8 @@
   "scripts": {
     "build": "parcel build ./src/index.html --out-dir build",
     "client": "parcel ./src/index.html --open",
-    "start": "nodemon ./server/app"
+    "start": "nodemon ./server/app",
+    "production": "node ./server/app"
   },
   "devDependencies": {
     "babel-plugin-import": "^1.11.0",

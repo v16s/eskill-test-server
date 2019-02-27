@@ -2,8 +2,7 @@ var express = require('express')
 var router = express.Router()
 var mongoose = require('mongoose')
 var createTest = require('../models/createTest.js')
-var passport = require('passport')
-require('../config/passport')(passport)
+var passport = require('../config/passport')
 
 let getToken = headers => {
   if (headers && headers.authorization) {

@@ -1,10 +1,7 @@
 let express = require('express')
 let router = express.Router()
-let passport = require('passport')
 
-let studentPassport = passport
-require('../config/passport')(passport)
-require('../config/studentPassport')(studentPassport)
+const passport = require('../config/passport')
 
 let getToken = headers => {
   if (headers && headers.authorization) {
@@ -19,20 +16,21 @@ let getToken = headers => {
   }
 }
 
-router.get('/admin', passport.authenticate('jwt', { session: false }), function (
-  req,
-  res
-) {
-  var token = getToken(req.headers)
-  if (token) {
-    res.status(200).send({ success: true, user: req.user })
-  } else {
-    return res.status(403).send({ success: false, msg: 'Unauthorized.' })
+router.get(
+  '/admin',
+  passport.authenticate('admin', { session: false }),
+  function (req, res) {
+    var token = getToken(req.headers)
+    if (token) {
+      res.status(200).send({ success: true, user: req.user })
+    } else {
+      return res.status(403).send({ success: false, msg: 'Unauthorized.' })
+    }
   }
-})
+)
 router.get(
   '/student',
-  studentPassport.authenticate('jwt', { session: false }),
+  passport.authenticate('student', { session: false }),
   function (req, res) {
     var token = getToken(req.headers)
     if (token) {

@@ -6,23 +6,41 @@ var ExtractJwt = require('passport-jwt').ExtractJwt
 var User = require('../models/user')
 var settings = require('../config/settings') // get settings file
 
-module.exports = function (passport) {
-  var opts = {}
-  opts.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme('jwt')
-  opts.secretOrKey = settings.secret
-  passport.use(
-    new JwtStrategy(opts, function (jwt_payload, done) {
-      console.log(jwt_payload)
-      User.findOne({ regNumber: jwt_payload.regNumber }, function (err, user) {
-        if (err) {
-          return done(err, false)
-        }
-        if (user) {
-          done(null, user)
-        } else {
-          done(null, false)
-        }
-      })
+let passport = require('passport')
+var opts = {}
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme('jwt')
+opts.secretOrKey = settings.secret
+passport.use(
+  'admin',
+  new JwtStrategy(opts, function (jwt_payload, done) {
+    User.findOne({ regNumber: jwt_payload.regNumber }, function (err, user) {
+      if (err) {
+        return done(err, false)
+      }
+      if (user) {
+        done(null, user)
+      } else {
+        done(null, { level: 0 })
+      }
     })
-  )
-}
+  })
+)
+passport.use(
+  'student',
+  new JwtStrategy(opts, function (jwt_payload, done) {
+    TestReport.findOne({ regNumber: jwt_payload.regNumber }, function (
+      err,
+      user
+    ) {
+      if (err) {
+        return done(err, false)
+      }
+      if (user) {
+        done(null, user)
+      } else {
+        done(null, false)
+      }
+    })
+  })
+)
+module.exports = passport

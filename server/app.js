@@ -1,7 +1,8 @@
 let express = require('express')
 let path = require('path')
 let bodyParser = require('body-parser')
-let createTest = require('./routes/createTest')
+let admin = require('./routes/admin')
+let student = require('./routes/student')
 let validate = require('./routes/validate')
 let auth = require('./routes/auth')
 let cors = require('cors')
@@ -9,6 +10,7 @@ let app = express()
 let morgan = require('morgan')
 let http = require('http')
 let port = process.env.PORT || 3000
+let passport = require('./config/passport')
 
 app.use(cors())
 app.use(morgan('tiny'))
@@ -16,7 +18,12 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: 'false' }))
 
 app.use('/api/auth', auth)
-app.use('/api/createTest', createTest)
+app.use('/api/admin', passport.authenticate('admin', { session: false }), admin)
+app.use(
+  '/api/student',
+  passport.authenticate('student', { session: false }),
+  student
+)
 app.use('/api/validate', validate)
 
 let mongoose = require('mongoose')

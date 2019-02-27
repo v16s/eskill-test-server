@@ -1,8 +1,4 @@
-let passport = require('passport')
 let settings = require('../config/settings')
-let studentPassport = passport
-require('../config/passport')(passport)
-require('../config/studentPassport')(studentPassport)
 
 let express = require('express')
 let jwt = require('jsonwebtoken')

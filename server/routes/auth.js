@@ -23,56 +23,6 @@ router.post('/register', function (req, res) {
   }
 })
 
-router.post('/createTest', function (req, res) {
-  let { branch, course, totTime, totQues, testID } = req.body
-  if (!branch || !course || !totQues || !totTime || !testID) {
-    res.json({ success: false, msg: 'Please pass values for the fields.' })
-  } else {
-    var newTest = new Test(req.body)
-    // save the user
-    newTest.save(function (err, newT) {
-      if (err) {
-        return res.json({ success: false, msg: 'Test already exists.' })
-      }
-      res.json({ success: true, test: newT })
-    })
-  }
-})
-
-router.post('/testReport', function (req, res) {
-  let {
-    regNumber,
-    status,
-    branch,
-    course,
-    totTime,
-    totQues,
-    testID,
-    startTime
-  } = req.body
-  if (
-    !status ||
-    !branch ||
-    !course ||
-    !totQues ||
-    !totTime ||
-    !testID ||
-    !startTime ||
-    !regNumber
-  ) {
-    res.json({ success: false, msg: 'Please pass values for the fields.' })
-  } else {
-    var newReport = new Report(req.body)
-    // save the user
-    newReport.save(function (err) {
-      if (err) {
-        return res.json({ success: false, msg: 'Test already exists.' })
-      }
-      res.json({ success: true, msg: 'Successful created new user.' })
-    })
-  }
-})
-
 router.post('/admin/login', function (req, res) {
   User.findOne(
     {

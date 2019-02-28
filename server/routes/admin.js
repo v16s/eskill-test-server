@@ -1,5 +1,5 @@
 let router = require('express').Router()
-let { Report, Branch, Test } = require('../models')
+let { Report, Branch, Test, User } = require('../models')
 
 router.post('/addBranch', function (req, res) {
   let { name } = req.body
@@ -42,7 +42,14 @@ router.post('/editBranch', function (req, res) {
 //     })
 //   }
 // })
-
+router.get('/tests', (req, res) => {
+  Test.find({ testID: { $in: req.user.tests } }, (err, tests) => {
+    if (err) {
+      res.json({ success: false, err })
+    }
+    res.json({ success: true, tests })
+  })
+})
 router.post('/testReport', function (req, res) {
   let { username, testID } = req.body
   Test.findOne({ testID }, (err, test) => {
@@ -52,12 +59,18 @@ router.post('/testReport', function (req, res) {
   res.sendStatus(200)
 })
 router.post('/createTest', function (req, res) {
-  let _test = new Test(req.body)
-  _test.save(function (err, test) {
-    if (err) {
-      return res.json({ success: false, err })
-    }
-    res.json({ success: true, test })
+  User.findOne({ regNumber: req.user.regNumber }, (err, _user) => {
+    let _test = new Test(req.body)
+    _user.tests.push(_test.testID)
+    _user.markModified('tests')
+    _test.save(function (err, test) {
+      if (err) {
+        res.json({ success: false, err })
+      }
+      _user.save((err, user) => {
+        res.json({ success: true, test, user })
+      })
+    })
   })
 })
 

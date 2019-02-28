@@ -3,9 +3,7 @@ let settings = require('../config/settings')
 let express = require('express')
 let jwt = require('jsonwebtoken')
 let router = express.Router()
-let User = require('../models/user')
-let Test = require('../models/createTest')
-let Report = require('../models/testReport')
+let { User, Report } = require('../models')
 
 router.post('/register', function (req, res) {
   let { regNumber, password, field, college, email, fullName } = req.body

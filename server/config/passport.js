@@ -3,7 +3,7 @@ var JwtStrategy = require('passport-jwt').Strategy
 var ExtractJwt = require('passport-jwt').ExtractJwt
 
 // load up the user model
-var User = require('../models/user')
+let { User, Report } = require('../models')
 var settings = require('../config/settings') // get settings file
 
 let passport = require('passport')
@@ -28,10 +28,7 @@ passport.use(
 passport.use(
   'student',
   new JwtStrategy(opts, function (jwt_payload, done) {
-    TestReport.findOne({ regNumber: jwt_payload.regNumber }, function (
-      err,
-      user
-    ) {
+    Report.findOne({ regNumber: jwt_payload.regNumber }, function (err, user) {
       if (err) {
         return done(err, false)
       }

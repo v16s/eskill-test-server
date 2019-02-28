@@ -28,20 +28,17 @@ router.post('/editBranch', function (req, res) {
     res.sendStatus(200)
   })
 })
-// router.post('/addCourse', function (req, res) {
-//   let { name, session } = req.body
-//   if (!name || !session) {
-//     res.json({ success: false, msg: 'Please pass values for the fields.' })
-//   } else {
-//     var newCourse = new Course(req.body)
-//     newCourse.save(function (err, newC) {
-//       if (err) {
-//         return res.json({ success: false, msg: 'Branch already exists.' })
-//       }
-//       res.json({ success: true, branch: newC })
-//     })
-//   }
-// })
+router.post('/addCourse', function (req, res) {
+  let { name, courseName, session } = req.body
+  Branch.updateOne(
+    { name },
+    { $set: { courses: [{ name: courseName, session: session }] } },
+    err => {
+      console.log(err)
+      res.sendStatus(200)
+    }
+  )
+})
 
 router.post('/testReport', function (req, res) {
   let { username, testID } = req.body

@@ -15,9 +15,18 @@ router.post('/addBranch', function (req, res) {
 
 router.post('/removeBranch', function (req, res) {
   let { name } = req.body
-  Branch.remove({ name })
+  Branch.remove({ name }, err => {
+    console.log(err)
+    res.sendStatus(200)
+  })
+})
 
-  res.sendStatus(200)
+router.post('/editBranch', function (req, res) {
+  let { name, newName } = req.body
+  Branch.updateOne({ name: name }, { $set: { name: newName } }, err => {
+    console.log(err)
+    res.sendStatus(200)
+  })
 })
 // router.post('/addCourse', function (req, res) {
 //   let { name, session } = req.body

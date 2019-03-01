@@ -1,8 +1,12 @@
-var mongoose = require('mongoose')
-var Schema = mongoose.Schema
-var bcrypt = require('bcrypt-nodejs')
-
-var UserSchema = new Schema({
+let mongoose = require('mongoose')
+let Schema = mongoose.Schema
+let bcrypt = require('bcrypt-nodejs')
+let Test = new Schema({
+  branch: String,
+  department: String,
+  testID: String
+})
+let UserSchema = new Schema({
   regNumber: { type: String, unique: true, required: true },
   password: { type: String, required: true },
   fullName: { type: String, required: true },
@@ -11,11 +15,12 @@ var UserSchema = new Schema({
   dob: { type: Date, required: false, default: '' },
   email: { type: String, required: true },
   createdDate: { type: Date, default: Date.now },
-  isAdmin: { type: Number, default: 0 }
+  isAdmin: { type: Number, default: 0 },
+  tests: [Test]
 })
 
 UserSchema.pre('save', function (next) {
-  var user = this
+  let user = this
   if (this.isModified('password') || this.isNew) {
     bcrypt.genSalt(10, function (err, salt) {
       if (err) {

@@ -1,7 +1,11 @@
 let mongoose = require('mongoose')
 let Schema = mongoose.Schema
 let bcrypt = require('bcrypt-nodejs')
-
+let Test = new Schema({
+  branch: String,
+  department: String,
+  testID: String
+})
 let UserSchema = new Schema({
   regNumber: { type: String, unique: true, required: true },
   password: { type: String, required: true },
@@ -12,7 +16,7 @@ let UserSchema = new Schema({
   email: { type: String, required: true },
   createdDate: { type: Date, default: Date.now },
   isAdmin: { type: Number, default: 0 },
-  tests: [String]
+  tests: [Test]
 })
 
 UserSchema.pre('save', function (next) {

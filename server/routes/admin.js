@@ -57,14 +57,14 @@ router.post('/testReport', function (req, res) {
   res.sendStatus(200)
 })
 router.post('/createTest', function (req, res) {
-  console.log(req.user)
   User.findOne({ regNumber: req.user.regNumber }, async (err, _user) => {
     let _test = new Test(req.body)
-    _user.tests.push(_test.testID)
+    _user.tests.push(_test)
     _user.markModified('tests')
     try {
+      console.log(_user.tests)
       let test = await _test.save()
-      // let user = await _user.save()
+      let user = await _user.save()
       let reports = await Report.insertMany(
         Array.from(Array(parseInt(req.body.number))).map((k, i) => {
           return {
@@ -74,10 +74,8 @@ router.post('/createTest', function (req, res) {
           }
         })
       )
-      console.log(reports)
       res.json({ success: true, test, user })
     } catch (err) {
-      console.log(err)
       res.json({ success: false, err })
     }
   })

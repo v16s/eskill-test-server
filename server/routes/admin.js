@@ -28,16 +28,16 @@ router.post('/editBranch', function (req, res) {
     res.sendStatus(200)
   })
 })
-router.post('/addCourse', function (req, res) {
-  let { name, courseName, session } = req.body
-  Branch.updateOne(
-    { name },
-    { $set: { courses: [{ name: courseName, session: session }] } },
-    err => {
-      console.log(err)
-      res.sendStatus(200)
-    }
-  )
+router.post('/addCourse', async function (req, res) {
+  let { name, courseName } = req.body
+  try {
+    let branch = await Branch.findOne({ name })
+    branch.courses.push({ name: courseName, session: [] })
+    await branch.save()
+    res.json({ success: true, branch })
+  } catch (err) {
+    res.json({ success: false, err })
+  }
 })
 
 router.post('/testReport', function (req, res) {

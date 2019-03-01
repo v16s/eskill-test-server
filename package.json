@@ -21,6 +21,7 @@
     "http": "^0.0.0",
     "jsonwebtoken": "^8.4.0",
     "less": "2.7",
+    "lodash": "^4.17.11",
     "mongodb": "^3.1.12",
     "mongoose": "^5.4.5",
     "morgan": "^1.9.1",

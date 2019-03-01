@@ -41,12 +41,16 @@ router.post('/addCourse', async function (req, res) {
 })
 
 router.get('/tests', (req, res) => {
-  Test.find({ testID: { $in: req.user.tests } }, (err, tests) => {
-    if (err) {
-      res.json({ success: false, err })
+  Test.find(
+    { testID: { $in: req.user.tests.map(d => d.testID) } },
+    (err, tests) => {
+      if (err) {
+        res.json({ success: false, err })
+      } else {
+        res.json({ success: true, tests })
+      }
     }
-    res.json({ success: true, tests })
-  })
+  )
 })
 router.post('/testReport', function (req, res) {
   let { username, testID } = req.body

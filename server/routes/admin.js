@@ -36,6 +36,7 @@ router.post('/addCourse', async function (req, res) {
     await branch.addCourse(courseName)
     res.json({ success: true, branch })
   } catch (err) {
+    console.log(err)
     res.json({ success: false, err })
   }
 })
@@ -44,7 +45,7 @@ router.post('/editCourse', async function (req, res) {
   let { name, courseName, newCourseName } = req.body
   try {
     let branch = await Branch.findOne({ name })
-    branch.editCourse(courseName, newCourseName)
+    await branch.editCourse(courseName, newCourseName)
     console.log(branch)
     res.json({ success: true, branch })
   } catch (err) {
@@ -55,11 +56,12 @@ router.post('/editCourse', async function (req, res) {
 router.post('/removeCourse', async function (req, res) {
   let { name, courseName } = req.body
   try {
-    let branch = Branch.findOne({ name })
+    let branch = await Branch.findOne({ name })
     await branch.removeCourse(courseName)
 
     res.json({ success: true, branch })
   } catch (err) {
+    console.log(err)
     res.json({ success: false, err })
   }
 })

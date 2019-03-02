@@ -10,7 +10,7 @@ const GlobalSchema = new Schema({
   studentreg: Boolean,
   facultyreg: Boolean,
   cooordinatorreg: Boolean,
-  branches: Array,
+  campus: Array,
   departments: Array
 })
 
@@ -27,24 +27,24 @@ GlobalSchema.methods.toggleFacultyRegistration = function (callback) {
     callback(err, nModified.facultyreg)
   })
 }
-GlobalSchema.methods.addBranch = function (branch_name, callback) {
-  this.branches.push(branch_name)
+GlobalSchema.methods.addCampus = function (campus_name, callback) {
+  this.campus.push(campus_name)
   this.save((err, nModified) => {
-    callback(err, nModified.branches)
+    callback(err, nModified.campus)
   })
 }
-GlobalSchema.methods.editBranch = function (branch_name, new_name, callback) {
-  this.branches = this.branches.map(k => (k == branch_name ? new_name : k))
+GlobalSchema.methods.editCampus = function (campus_name, new_name, callback) {
+  this.campus = this.campus.map(k => (k == campus_name ? new_name : k))
   this.save((err, nModified) => {
-    callback(err, nModified.branches)
+    callback(err, nModified.campus)
   })
 }
-GlobalSchema.methods.removeBranch = function (branch_name, callback) {
-  var Branch = this.branches
-  Branch = reject(Branch, d => d == branch_name)
-  this.branches = Branch
+GlobalSchema.methods.removeCampus = function (campus_name, callback) {
+  var Campus = this.campus
+  Campus = reject(Campus, d => d == campus_name)
+  this.campus = Campus
   this.save((err, nModified) => {
-    callback(err, nModified.branches)
+    callback(err, nModified.campus)
   })
 }
 

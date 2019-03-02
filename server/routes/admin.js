@@ -1,7 +1,21 @@
 let router = require('express').Router()
 let { Report, Branch, Test, User } = require('../models')
-let { findIndex, reject } = require('lodash')
 
+router.post('/registerfc', async function (req, res) {
+  var newUser = new User({
+    ...req.body,
+    department: req.user.department,
+    campus: req.user.campus,
+    tests: []
+  })
+  // save the user
+  try {
+    await newUser.save()
+    res.status(200).send(newUser)
+  } catch (err) {
+    res.send({ err })
+  }
+})
 router.post('/addBranch', function (req, res) {
   let { name } = req.body
 
@@ -16,7 +30,7 @@ router.post('/addBranch', function (req, res) {
 
 router.post('/removeBranch', function (req, res) {
   let { name } = req.body
-  Branch.deleteOne({ name }, err => {
+  Branch.remove({ name }, err => {
     console.log(err)
     res.sendStatus(200)
   })
@@ -33,79 +47,13 @@ router.post('/addCourse', async function (req, res) {
   let { name, courseName } = req.body
   try {
     let branch = await Branch.findOne({ name })
-    await branch.addCourse(courseName)
-    res.json({ success: true, branch })
-  } catch (err) {
-    console.log(err)
-    res.json({ success: false, err })
-  }
-})
-
-router.post('/editCourse', async function (req, res) {
-  let { name, courseName, newCourseName } = req.body
-  try {
-    let branch = await Branch.findOne({ name })
-    await branch.editCourse(courseName, newCourseName)
-    console.log(branch)
+    branch.courses.push({ name: courseName, session: [] })
+    await branch.save()
     res.json({ success: true, branch })
   } catch (err) {
     res.json({ success: false, err })
   }
 })
-
-router.post('/removeCourse', async function (req, res) {
-  let { name, courseName } = req.body
-  try {
-    let branch = await Branch.findOne({ name })
-    await branch.removeCourse(courseName)
-
-    res.json({ success: true, branch })
-  } catch (err) {
-    console.log(err)
-    res.json({ success: false, err })
-  }
-})
-
-router.post('/addSession', async function (req, res) {
-  let { name, courseName, session } = req.body
-  try {
-    let branch = await Branch.findOne({
-      name
-    })
-    let course = findIndex(branch.courses, { name: courseName })
-    if (course != -1) {
-      branch.courses[course].session.push(session)
-      await branch.save()
-      res.json({ success: true, branch })
-    } else {
-      res.json({ success: false }, err)
-    }
-  } catch (err) {
-    res.json({ success: false, err })
-  }
-})
-
-// router.post('/editSession', async function (req, res) {
-//   let { name, courseName, sessionName, newSessionName } = req.body
-//   try {
-//     let branch = await Branch.findOne({ name })
-//     let course = findIndex(branch.courses, { name: courseName })
-//     if (course != -1) {
-//       let sName = findIndex(branch.courses[course], { name: sessionName })
-//       if (sName != -1) {
-//         branch.courses[course].session[sName].set({ name: newSessionName })
-//         await branch.save()
-//         res.json({ success: true, branch })
-//       } else {
-//         res.json({ success: false }, err)
-//       }
-//     } else {
-//       res.json({ success: false }, err)
-//     }
-//   } catch (err) {
-//     res.json({ success: false, err })
-//   }
-// })
 
 router.get('/tests', (req, res) => {
   Test.find(

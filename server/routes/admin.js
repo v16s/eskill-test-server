@@ -46,7 +46,6 @@ router.post('/editCourse', async function (req, res) {
   try {
     let branch = await Branch.findOne({ name })
     await branch.editCourse(courseName, newCourseName)
-    console.log(branch)
     res.json({ success: true, branch })
   } catch (err) {
     res.json({ success: false, err })
@@ -58,7 +57,6 @@ router.post('/removeCourse', async function (req, res) {
   try {
     let branch = await Branch.findOne({ name })
     await branch.removeCourse(courseName)
-
     res.json({ success: true, branch })
   } catch (err) {
     console.log(err)
@@ -85,27 +83,28 @@ router.post('/addSession', async function (req, res) {
   }
 })
 
-// router.post('/editSession', async function (req, res) {
-//   let { name, courseName, sessionName, newSessionName } = req.body
-//   try {
-//     let branch = await Branch.findOne({ name })
-//     let course = findIndex(branch.courses, { name: courseName })
-//     if (course != -1) {
-//       let sName = findIndex(branch.courses[course], { name: sessionName })
-//       if (sName != -1) {
-//         branch.courses[course].session[sName].set({ name: newSessionName })
-//         await branch.save()
-//         res.json({ success: true, branch })
-//       } else {
-//         res.json({ success: false }, err)
-//       }
-//     } else {
-//       res.json({ success: false }, err)
-//     }
-//   } catch (err) {
-//     res.json({ success: false, err })
-//   }
-// })
+router.post('/editSession', async function (req, res) {
+  let { name, courseName, session, newSesName } = req.body
+  try {
+    let branch = await Branch.findOne({ name })
+    await branch.editSession(courseName, session, newSesName)
+    res.json({ success: true, branch })
+  } catch (err) {
+    res.json({ success: false, err })
+  }
+})
+
+router.post('/removeSession', async function (req, res) {
+  let { name, courseName, session } = req.body
+  try {
+    let branch = await Branch.findOne({ name })
+    await branch.removeSession(courseName, session)
+    res.json({ success: true, branch })
+  } catch (err) {
+    console.log(err)
+    res.json({ success: false, err })
+  }
+})
 
 router.get('/tests', (req, res) => {
   Test.find(

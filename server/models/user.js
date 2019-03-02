@@ -2,16 +2,16 @@ let mongoose = require('mongoose')
 let Schema = mongoose.Schema
 let bcrypt = require('bcrypt-nodejs')
 let Test = new Schema({
-  branch: String,
-  department: String,
-  testID: String
+  testID: { type: String, required: true },
+  branch: { type: String, required: true },
+  course: { type: String, required: true }
 })
 let UserSchema = new Schema({
   regNumber: { type: String, unique: true, required: true },
   password: { type: String, required: true },
   fullName: { type: String, required: true },
-  college: { type: String, required: true },
-  field: { type: String, required: true },
+  campus: { type: String, required: true },
+  department: { type: String, required: true },
   dob: { type: Date, required: false, default: '' },
   email: { type: String, required: true },
   createdDate: { type: Date, default: Date.now },

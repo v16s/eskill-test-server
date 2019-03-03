@@ -1,6 +1,6 @@
 let express = require('express')
 let bodyParser = require('body-parser')
-let { admin, student, validate, auth, global } = require('./routes')
+let { admin, student, validate, auth, global, faculty } = require('./routes')
 let cors = require('cors')
 let app = express()
 let morgan = require('morgan')
@@ -15,6 +15,11 @@ app.use(bodyParser.urlencoded({ extended: 'false' }))
 
 app.use('/api/auth', auth)
 app.use('/api/global', global)
+app.use(
+  '/api/faculty',
+  passport.authenticate('faculty', { session: false }),
+  faculty
+)
 app.use('/api/admin', passport.authenticate('admin', { session: false }), admin)
 app.use(
   '/api/student',

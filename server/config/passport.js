@@ -40,4 +40,19 @@ passport.use(
     })
   })
 )
+passport.use(
+  'faculty',
+  new JwtStrategy(opts, function (jwt_payload, done) {
+    User.findOne({ regNumber: jwt_payload.regNumber }, function (err, user) {
+      if (err) {
+        return done(err, false)
+      }
+      if (user) {
+        done(null, user)
+      } else {
+        done(null, { level: 0 })
+      }
+    })
+  })
+)
 module.exports = passport

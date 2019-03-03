@@ -1,6 +1,6 @@
 let router = require('express').Router()
 let { Report, Branch, Test, User } = require('../models')
-
+let { findIndex } = require('lodash')
 router.post('/registerfc', async function (req, res) {
   var newUser = new User({
     ...req.body,
@@ -22,7 +22,7 @@ router.post('/addBranch', function (req, res) {
   let newBranch = new Branch(req.body)
   newBranch.save(function (err, newB) {
     if (err) {
-      return res.json({ success: false, msg: err })
+      return res.json({ success: false, err })
     }
     res.json({ success: true, branch: newB })
   })
@@ -31,17 +31,25 @@ router.post('/addBranch', function (req, res) {
 router.post('/removeBranch', function (req, res) {
   let { name } = req.body
   Branch.remove({ name }, err => {
-    console.log(err)
-    res.sendStatus(200)
+    if (!err) {
+      res.json({ success: true, name })
+    } else {
+      res.json({ success: false, err })
+    }
   })
 })
 
-router.post('/editBranch', function (req, res) {
+router.post('/editBranch', async function (req, res) {
   let { name, newName } = req.body
-  Branch.updateOne({ name: name }, { $set: { name: newName } }, err => {
-    console.log(err)
-    res.sendStatus(200)
-  })
+  try {
+    let branch = await Branch.updateOne(
+      { name: name },
+      { $set: { name: newName } }
+    )
+    res.json({ success: true, branch })
+  } catch (err) {
+    res.json({ success: false, err })
+  }
 })
 router.post('/addCourse', async function (req, res) {
   let { name, courseName } = req.body
@@ -93,7 +101,8 @@ router.post('/addSession', async function (req, res) {
       res.json({ success: false }, err)
     }
   } catch (err) {
-    res.json({ success: false, err })
+    console.log(err)
+    res.json({ success: false, err: err })
   }
 })
 
@@ -131,6 +140,14 @@ router.get('/tests', (req, res) => {
       }
     }
   )
+})
+router.get('/branches', async (req, res) => {
+  try {
+    let branches = await Branch.find()
+    res.json({ success: true, branches })
+  } catch (err) {
+    res.json({ success: false, err })
+  }
 })
 router.post('/testReport', function (req, res) {
   let { username, testID } = req.body

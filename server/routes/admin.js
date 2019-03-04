@@ -220,6 +220,37 @@ router.post('/createTest', function (req, res) {
   })
 })
 
+router.post('/addstudent', function (req, res) {
+  Test.findOne({ testID: req.body.testID }, async (err, _test) => {
+    Report.findOne({}, async (err, rep) => {
+      username = rep.username.split('_')
+      username.reverse()
+      let count = parseInt(username[0])
+      try {
+        await Report.insertMany(
+          Array.from(Array(parseInt(req.body.number))).map((k, i) => {
+            return {
+              ...req.body,
+              questions: [],
+              username: `${req.body.testID}_student_${i + count + 1}`,
+              password: Math.random()
+                .toString(36)
+                .replace(/[^a-z]+/g, '')
+                .substr(0, 5)
+            }
+          })
+        )
+        res.json({ success: true })
+      } catch (err) {
+        console.log(err)
+        res.json({ success: false, err })
+      }
+    })
+      .limit(1)
+      .sort({ $natural: -1 })
+  })
+})
+
 router.post('/addfaculty', function (req, res) {
   User.findOne({ regNumber: req.body.regNumber }, async (err, _user) => {
     Test.findOne({ testID: req.body.testID }, function (err, _test) {

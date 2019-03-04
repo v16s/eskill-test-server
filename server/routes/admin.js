@@ -128,7 +128,18 @@ router.post('/removeSession', async function (req, res) {
     res.json({ success: false, err })
   }
 })
-
+router.get('/faculties', async (req, res) => {
+  try {
+    let faculties = await User.find({
+      isAdmin: 2,
+      campus: req.user.campus,
+      department: req.user.department
+    })
+    res.json({ success: true, faculties })
+  } catch (err) {
+    res.json({ success: false, err })
+  }
+})
 router.get('/tests', (req, res) => {
   Test.find(
     { testID: { $in: req.user.tests.map(d => d.testID) } },

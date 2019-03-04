@@ -9,7 +9,7 @@ const Question = new Schema({
   }
 })
 const Report = new Schema({
-  status: Number,
+  status: { type: Number, default: 0 },
   testID: String,
   branch: String,
   course: String,

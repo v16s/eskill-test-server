@@ -128,12 +128,26 @@ router.post('/removeSession', async function (req, res) {
     res.json({ success: false, err })
   }
 })
-router.get('/faculties', async (req, res) => {
+router.get('/faculties/:testID', async (req, res) => {
   try {
     let faculties = await User.find({
       isAdmin: 2,
       campus: req.user.campus,
-      department: req.user.department
+      department: req.user.department,
+      'tests.testID': { $in: [req.params.testID] }
+    })
+    res.json({ success: true, faculties })
+  } catch (err) {
+    res.json({ success: false, err })
+  }
+})
+router.get('/allfaculties/:testID', async (req, res) => {
+  try {
+    let faculties = await User.find({
+      isAdmin: 2,
+      campus: req.user.campus,
+      department: req.user.department,
+      'tests.testID': { $nin: [req.params.testID] }
     })
     res.json({ success: true, faculties })
   } catch (err) {

@@ -221,16 +221,19 @@ router.post('/createTest', function (req, res) {
 })
 
 router.post('/addstudent', function (req, res) {
-  Test.findOne({ testID: req.body.testID }, async (err, _test) => {
+  
     Report.findOne({}, async (err, rep) => {
       username = rep.username.split('_')
       username.reverse()
       let count = parseInt(username[0])
       try {
+        console.log(rep)
         await Report.insertMany(
           Array.from(Array(parseInt(req.body.number))).map((k, i) => {
             return {
-              ...req.body,
+              branch: rep.branch,
+              testID: rep.testID,
+              course: rep.course,
               questions: [],
               username: `${req.body.testID}_student_${i + count + 1}`,
               password: Math.random()
@@ -248,7 +251,6 @@ router.post('/addstudent', function (req, res) {
     })
       .limit(1)
       .sort({ $natural: -1 })
-  })
 })
 
 router.post('/addfaculty', function (req, res) {

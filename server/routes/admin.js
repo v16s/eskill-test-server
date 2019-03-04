@@ -1,6 +1,6 @@
 let router = require('express').Router()
 let { Report, Branch, Test, User } = require('../models')
-let { findIndex,reject } = require('lodash')
+let { findIndex, reject } = require('lodash')
 router.post('/registerfc', async function (req, res) {
   var newUser = new User({
     ...req.body,
@@ -224,12 +224,38 @@ router.post('/removefaculty', function (req, res) {
   })
 })
 router.post('/removestudent', function (req, res) {
-  Report.deleteOne({ username: req.body.username }, async (err) => {
+  Report.deleteOne({ username: req.body.username }, async err => {
     if (err) {
       return res.json({ success: false, msg: err })
     }
     res.json({ success: true })
   })
+})
+router.post('/updatepassword', function (req, res) {
+  Report.findOne({ username: req.body.username }, async (err, user) => {
+    user.password = req.body.password
+    user.save(function (err, user) {
+      if (err) {
+        return res.json({ success: false, msg: err })
+      }
+      res.json({ success: true, user: user })
+    })
+  })
+})
+
+router.post('/endtest', function (req, res) {
+  Report.findOne(
+    { username: req.body.username, testID: req.body.testID },
+    async (err, user) => {
+      user.status = 2
+      user.save(function (err, user) {
+        if (err) {
+          return res.json({ success: false, msg: err })
+        }
+        res.json({ success: true, user: user })
+      })
+    }
+  )
 })
 
 module.exports = router

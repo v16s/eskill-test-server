@@ -1,6 +1,6 @@
 let router = require('express').Router()
 let { Report, Branch, Test, User } = require('../models')
-let { findIndex } = require('lodash')
+let { findIndex,reject } = require('lodash')
 router.post('/registerfc', async function (req, res) {
   var newUser = new User({
     ...req.body,
@@ -203,6 +203,43 @@ router.post('/createTest', function (req, res) {
     } catch (err) {
       res.json({ success: false, err })
     }
+  })
+})
+
+router.post('/addfaculty', function (req, res) {
+  User.findOne({ regNumber: req.body.regNumber }, async (err, _user) => {
+    Test.findOne({ testID: req.body.testID }, function (err, _test) {
+      _user.tests.push(_test)
+      _user.markModified('tests')
+      _user.save(function (err, user) {
+        if (err) {
+          return res.json({ success: false, msg: err })
+        }
+        res.json({ success: true, user: user })
+      })
+    })
+  })
+})
+router.post('/removefaculty', function (req, res) {
+  User.findOne({ regNumber: req.body.regNumber }, async (err, _user) => {
+    Test.findOne({ testID: req.body.testID }, function (err, _test) {
+      _user.tests = reject(_user.test, d => d == _test)
+      _user.markModified('tests')
+      _user.save(function (err, user) {
+        if (err) {
+          return res.json({ success: false, msg: err })
+        }
+        res.json({ success: true, user: user })
+      })
+    })
+  })
+})
+router.post('/removestudent', function (req, res) {
+  Report.deleteOne({ username: req.body.username }, async (err) => {
+    if (err) {
+      return res.json({ success: false, msg: err })
+    }
+    res.json({ success: true })
   })
 })
 

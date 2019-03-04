@@ -141,6 +141,15 @@ router.get('/tests', (req, res) => {
     }
   )
 })
+router.get('/reports/:testID', async (req, res) => {
+  let { testID } = req.params
+  try {
+    let reports = await Report.find({ testID })
+    res.json({ success: true, reports })
+  } catch (err) {
+    res.json({ success: false, err })
+  }
+})
 router.get('/branches', async (req, res) => {
   try {
     let branches = await Branch.find()
@@ -171,7 +180,11 @@ router.post('/createTest', function (req, res) {
           return {
             ...req.body,
             questions: [],
-            username: `${req.body.testID}_student_${i}`
+            username: `${req.body.testID}_student_${i}`,
+            password: Math.random()
+              .toString(36)
+              .replace(/[^a-z]+/g, '')
+              .substr(0, 5)
           }
         })
       )

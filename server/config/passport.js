@@ -33,7 +33,6 @@ passport.use(
         return done(err, false)
       }
       if (user) {
-        console.log('yes')
         done(null, user)
       } else {
         done(null, false)

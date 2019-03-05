@@ -17,10 +17,10 @@ passport.use(
       if (err) {
         return done(err, false)
       }
-      if (user) {
+      if (user && user.isAdmin == 0) {
         done(null, user)
       } else {
-        done(null, { level: 0 })
+        done(null, false)
       }
     })
   })
@@ -48,6 +48,21 @@ passport.use(
       if (err) {
         return done(err, false)
       }
+      if (user && (user.isAdmin == 2 || user.isAdmin == 0)) {
+        done(null, user)
+      } else {
+        done(null, { level: 0 })
+      }
+    })
+  })
+)
+passport.use(
+  'validate',
+  new JwtStrategy(opts, function (jwt_payload, done) {
+    User.findOne({ regNumber: jwt_payload.regNumber }, function (err, user) {
+      if (err) {
+        return done(err, false)
+      }
       if (user) {
         done(null, user)
       } else {
@@ -56,4 +71,20 @@ passport.use(
     })
   })
 )
+passport.use(
+  'coordinator',
+  new JwtStrategy(opts, function (jwt_payload, done) {
+    User.findOne({ regNumber: jwt_payload.regNumber }, function (err, user) {
+      if (err) {
+        return done(err, false)
+      }
+      if (user && user.isAdmin == 1) {
+        done(null, user)
+      } else {
+        done(null, { level: 0 })
+      }
+    })
+  })
+)
+
 module.exports = passport

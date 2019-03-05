@@ -18,7 +18,7 @@ let getToken = headers => {
 
 router.get(
   '/admin',
-  passport.authenticate('admin', { session: false }),
+  passport.authenticate('validate', { session: false }),
   function (req, res) {
     var token = getToken(req.headers)
     if (token) {
@@ -32,6 +32,7 @@ router.get(
   '/student',
   passport.authenticate('student', { session: false }),
   function (req, res) {
+    console.log(req.user)
     var token = getToken(req.headers)
     if (token) {
       res.status(200).send({ success: true, user: req.user })

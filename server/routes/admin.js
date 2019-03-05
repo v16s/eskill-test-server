@@ -129,12 +129,26 @@ router.post('/removeSession', async function (req, res) {
     res.json({ success: false, err })
   }
 })
-router.get('/faculties', async (req, res) => {
+router.get('/faculties/:testID', async (req, res) => {
   try {
     let faculties = await User.find({
       isAdmin: 2,
       campus: req.user.campus,
-      department: req.user.department
+      department: req.user.department,
+      'tests.testID': { $in: [req.params.testID] }
+    })
+    res.json({ success: true, faculties })
+  } catch (err) {
+    res.json({ success: false, err })
+  }
+})
+router.get('/allfaculties/:testID', async (req, res) => {
+  try {
+    let faculties = await User.find({
+      isAdmin: 2,
+      campus: req.user.campus,
+      department: req.user.department,
+      'tests.testID': { $nin: [req.params.testID] }
     })
     res.json({ success: true, faculties })
   } catch (err) {
@@ -162,14 +176,7 @@ router.get('/reports/:testID', async (req, res) => {
     res.json({ success: false, err })
   }
 })
-router.get('/branches', async (req, res) => {
-  try {
-    let branches = await Branch.find()
-    res.json({ success: true, branches })
-  } catch (err) {
-    res.json({ success: false, err })
-  }
-})
+
 router.post('/testReport', function (req, res) {
   let { username, testID } = req.body
   Test.findOne({ testID }, (err, test) => {
@@ -192,7 +199,11 @@ router.post('/createTest', function (req, res) {
           return {
             ...req.body,
             questions: [],
-            username: `${req.body.testID}_student_${i}`,
+            nquestions: req.body.questions,
+            username: `${req.body.testID.replace(
+              / /g,
+              "+"
+            )}_${i}`,
             password: Math.random()
               .toString(36)
               .replace(/[^a-z]+/g, '')
@@ -207,6 +218,46 @@ router.post('/createTest', function (req, res) {
   })
 })
 
+router.post('/addstudent', function (req, res) {
+  
+    Report.findOne({}, async (err, rep) => {
+      username = rep.username.split('_')
+      username.reverse()
+      let count = parseInt(username[0])
+      try {
+        await Report.insertMany(
+          Array.from(Array(parseInt(req.body.number))).map((k, i) => {
+            return {
+              branch: rep.branch,
+              testID: rep.testID,
+              course: rep.course,
+              nquestions: rep.nquestions,
+              time: rep.time,
+              questions: [],
+              username: `${req.body.testID.replace(
+                / /g,
+                "+"
+              )}_${i + count + 1}`,
+              password: Math.random()
+                .toString(36)
+                .replace(/[^a-z]+/g, '')
+                .substr(0, 5)
+            }
+          })
+        )
+        res.json({ success: true })
+      } catch (err) {
+        console.log(err)
+        res.json({ success: false, err })
+      }
+    })
+      .limit(1)
+      .sort({ $natural: -1 })
+})
+/**
+ * coordinator = 1
+ * faculty = 2
+ */
 router.post('/addfaculty', function (req, res) {
   User.findOne({ regNumber: req.body.regNumber }, async (err, _user) => {
     Test.findOne({ testID: req.body.testID }, function (err, _test) {

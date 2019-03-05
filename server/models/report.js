@@ -13,8 +13,8 @@ const Report = new Schema({
   testID: String,
   branch: String,
   course: String,
-  totQues: Number,
-  totTime: Number,
+  nquestions: Number,
+  time: Number,
   username: String,
   password: String,
   questions: [Question]

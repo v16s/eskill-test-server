@@ -18,7 +18,7 @@ let getToken = headers => {
 
 router.get(
   '/admin',
-  passport.authenticate('admin', { session: false }),
+  passport.authenticate('validate', { session: false }),
   function (req, res) {
     var token = getToken(req.headers)
     if (token) {

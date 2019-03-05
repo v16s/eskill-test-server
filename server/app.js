@@ -20,7 +20,8 @@ app.use(cors())
 app.use(morgan('tiny'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: 'false' }))
-app.use('/uploads', express.static('uploads'))
+
+app.use(express.static('./public'))
 
 app.use('/api/auth', auth)
 app.use('/api/global', global)

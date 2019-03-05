@@ -3,11 +3,10 @@ const multer = require('multer')
 const router = require('express').Router()
 const path = require('path')
 const { Question } = require('../models')
+router.use(express.static('./public'))
 
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './uploads/')
-  },
+  destination: './public/uploads/',
   filename: function (req, file, cb) {
     cb(
       null,
@@ -41,12 +40,12 @@ function checkFileType (file, cb) {
 }
 
 router.post('/addQuestion', function (req, res) {
-  let { branch, course, n, title, definition } = req.body
+  let { branch, course, title, definition } = req.body
   let question = new Question(req.body)
   question.save()
 })
 
-router.post('/uploads', function (req, res) {
+router.post('/upload', function (req, res) {
   upload(req, res, err => {
     res.sendStatus(200)
   })

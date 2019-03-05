@@ -1,6 +1,7 @@
 let router = require('express').Router()
 let { Report, Branch, Test, User } = require('../models')
 let { findIndex, reject } = require('lodash')
+
 router.post('/registerfc', async function (req, res) {
   var newUser = new User({
     ...req.body,

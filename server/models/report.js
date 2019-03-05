@@ -17,7 +17,10 @@ const Report = new Schema({
   time: Number,
   username: String,
   password: String,
-  questions: [Question]
+  questions: [Question],
+  name: String,
+  email: String,
+  regno: String
 })
 
 module.exports = model('Report', Report)

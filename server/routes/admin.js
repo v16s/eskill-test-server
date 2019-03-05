@@ -205,6 +205,7 @@ router.post('/createTest', function (req, res) {
           return {
             ...req.body,
             questions: [],
+            nquestions: req.body.questions,
             username: `${req.body.testID}_student_${i}`,
             password: Math.random()
               .toString(36)
@@ -227,13 +228,14 @@ router.post('/addstudent', function (req, res) {
       username.reverse()
       let count = parseInt(username[0])
       try {
-        console.log(rep)
         await Report.insertMany(
           Array.from(Array(parseInt(req.body.number))).map((k, i) => {
             return {
               branch: rep.branch,
               testID: rep.testID,
               course: rep.course,
+              nquestions: rep.nquestions,
+              time: rep.time,
               questions: [],
               username: `${req.body.testID}_student_${i + count + 1}`,
               password: Math.random()

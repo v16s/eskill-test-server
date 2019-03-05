@@ -28,11 +28,12 @@ passport.use(
 passport.use(
   'student',
   new JwtStrategy(opts, function (jwt_payload, done) {
-    Report.findOne({ username: jwt_payload.regNumber }, function (err, user) {
+    Report.findOne({ username: jwt_payload.username }, function (err, user) {
       if (err) {
         return done(err, false)
       }
       if (user) {
+        console.log('yes')
         done(null, user)
       } else {
         done(null, false)

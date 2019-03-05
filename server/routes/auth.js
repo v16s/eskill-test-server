@@ -56,7 +56,7 @@ router.post('/admin/login', function (req, res) {
 router.post('/student/login', function (req, res) {
   Report.findOne(
     {
-      regNumber: req.body.regNumber
+      username: req.body.regNumber
     },
     function (err, user) {
       if (err) throw err

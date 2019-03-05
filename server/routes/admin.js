@@ -254,7 +254,10 @@ router.post('/addstudent', function (req, res) {
       .limit(1)
       .sort({ $natural: -1 })
 })
-
+/**
+ * coordinator = 1
+ * faculty = 2
+ */
 router.post('/addfaculty', function (req, res) {
   User.findOne({ regNumber: req.body.regNumber }, async (err, _user) => {
     Test.findOne({ testID: req.body.testID }, function (err, _test) {

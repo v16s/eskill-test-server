@@ -17,10 +17,10 @@ passport.use(
       if (err) {
         return done(err, false)
       }
-      if (user) {
+      if (user && user.isAdmin == 0) {
         done(null, user)
       } else {
-        done(null, { level: 0 })
+        done(null, false)
       }
     })
   })
@@ -48,7 +48,7 @@ passport.use(
       if (err) {
         return done(err, false)
       }
-      if (user) {
+      if (user && user.isAdmin == 2) {
         done(null, user)
       } else {
         done(null, { level: 0 })

@@ -177,14 +177,7 @@ router.get('/reports/:testID', async (req, res) => {
   }
 })
 
-router.post('/testReport', function (req, res) {
-  let { username, testID } = req.body
-  Test.findOne({ testID }, (err, test) => {
-    console.log(test)
-    console.log(username)
-  })
-  res.sendStatus(200)
-})
+
 router.post('/createTest', function (req, res) {
   User.findOne({ regNumber: req.user.regNumber }, async (err, _user) => {
     let _test = new Test(req.body)

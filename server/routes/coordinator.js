@@ -3,17 +3,38 @@ const multer = require('multer')
 const router = require('express').Router()
 const path = require('path')
 const { Question } = require('../models')
+const crypto = require('crypto')
+const GridFsStorage = require('multer-gridfs-storage')
+const Grid = require('gridfs-stream')
+const methodOverride = require('method-override')
 router.use(express.static('./public'))
 
-const storage = multer.diskStorage({
-  destination: './public/uploads/',
-  filename: function (req, file, cb) {
-    cb(
-      null,
-      file.fieldname + '-' + Date.now() + path.extname(file.originalname)
-    )
-  }
+let gfs;
+
+conn.once('open', () => {
+  gfs = Grid(conn.db, mongoose.mongo);
+  gfs.collection('questions');
 })
+
+
+const storage = multer.diskStorage({
+  url: 'mongodb://admin:password1@ds031947.mlab.com:31947/eskill-test',
+  file: (req, file) => {
+    return new Promise((resolve, reject) => {
+      crypto.randomBytes(16, (err, buf) => {
+        if (err) {
+          return reject(err);
+        }
+        const filename = buf.toString('hex') + path.extname(file.originalname);
+        const fileInfo = {
+          filename: filename,
+          bucketName: 'questions'
+        };
+        resolve(fileInfo);
+      });
+    });
+  }
+});
 
 const upload = multer({
   storage: storage,

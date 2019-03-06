@@ -8,10 +8,10 @@ const { Schema, model } = require('mongoose')
 let question = new Schema({
   branch: String,
   course: String,
-  n: Number,
   title: String,
   definition: String,
-  image: String
+  image: String,
+  n: Number
 })
 
-module.exports = model('question', question)
+module.exports = model('Question', question)

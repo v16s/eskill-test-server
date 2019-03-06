@@ -40,6 +40,15 @@ router.post('/removeBranch', function (req, res) {
   })
 })
 
+router.get('/branches', async (req, res) => {
+  try {
+    let branches = await Branch.find()
+    res.json({ success: true, branches })
+  } catch (err) {
+    res.json({ success: false, err })
+  }
+})
+
 router.post('/editBranch', async function (req, res) {
   let { name, newName } = req.body
   try {

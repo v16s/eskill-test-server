@@ -11,7 +11,8 @@ let question = new Schema({
   title: String,
   definition: String,
   image: String,
-  n: Number
+  n: Number,
+  answer : String
 })
 
 module.exports = model('Question', question)

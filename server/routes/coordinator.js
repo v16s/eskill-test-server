@@ -41,13 +41,16 @@ function checkFileType (file, cb) {
 
 router.post('/addQuestion', function (req, res) {
   let { branch, course, title, definition } = req.body
-  let question = new Question(req.body)
-  question.save()
-})
-
-router.post('/upload', function (req, res) {
   upload(req, res, err => {
+    let question = new Question({
+      branch: req.body.branch,
+      course: req.body.course,
+      title: req.body.title,
+      definition: req.body.title,
+      Image: req.file.path
+    })
     res.sendStatus(200)
+    question.save()
   })
 })
 

@@ -40,6 +40,15 @@ router.post('/removeBranch', function (req, res) {
   })
 })
 
+router.get('/branches', async (req, res) => {
+  try {
+    let branches = await Branch.find()
+    res.json({ success: true, branches })
+  } catch (err) {
+    res.json({ success: false, err })
+  }
+})
+
 router.post('/editBranch', async function (req, res) {
   let { name, newName } = req.body
   try {
@@ -177,14 +186,7 @@ router.get('/reports/:testID', async (req, res) => {
   }
 })
 
-router.post('/testReport', function (req, res) {
-  let { username, testID } = req.body
-  Test.findOne({ testID }, (err, test) => {
-    console.log(test)
-    console.log(username)
-  })
-  res.sendStatus(200)
-})
+
 router.post('/createTest', function (req, res) {
   User.findOne({ regNumber: req.user.regNumber }, async (err, _user) => {
     let _test = new Test(req.body)
@@ -202,7 +204,7 @@ router.post('/createTest', function (req, res) {
             nquestions: req.body.questions,
             username: `${req.body.testID.replace(
               / /g,
-              "+"
+              "_"
             )}_${i}`,
             password: Math.random()
               .toString(36)
@@ -236,7 +238,7 @@ router.post('/addstudent', function (req, res) {
               questions: [],
               username: `${req.body.testID.replace(
                 / /g,
-                "+"
+                "_"
               )}_${i + count + 1}`,
               password: Math.random()
                 .toString(36)

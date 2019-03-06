@@ -202,7 +202,7 @@ router.post('/createTest', function (req, res) {
             nquestions: req.body.questions,
             username: `${req.body.testID.replace(
               / /g,
-              "+"
+              "_"
             )}_${i}`,
             password: Math.random()
               .toString(36)
@@ -236,7 +236,7 @@ router.post('/addstudent', function (req, res) {
               questions: [],
               username: `${req.body.testID.replace(
                 / /g,
-                "+"
+                "_"
               )}_${i + count + 1}`,
               password: Math.random()
                 .toString(36)

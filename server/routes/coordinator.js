@@ -1,4 +1,5 @@
 const express = require('express')
+const mongoose = require('mongoose')
 const multer = require('multer')
 const router = require('express').Router()
 const path = require('path')
@@ -9,6 +10,8 @@ const Grid = require('gridfs-stream')
 const methodOverride = require('method-override')
 router.use(express.static('./public'))
 
+const mongoURI = 'mongodb://admin:password1@ds031947.mlab.com:31947/eskill-test';
+const conn = mongoose.createConnection(mongoURI)
 let gfs
 
 conn.once('open', () => {
@@ -17,7 +20,7 @@ conn.once('open', () => {
 })
 
 const storage = multer.diskStorage({
-  url: 'mongodb://admin:password1@ds031947.mlab.com:31947/eskill-test',
+  url: mongoURI,
   file: (req, file) => {
     return new Promise((resolve, reject) => {
       crypto.randomBytes(16, (err, buf) => {

@@ -10,7 +10,7 @@ const Grid = require('gridfs-stream')
 const methodOverride = require('method-override')
 router.use(express.static('./public'))
 
-const mongoURI = 'mongodb://admin:password1@ds031947.mlab.com:31947/eskill-test';
+const mongoURI = 'mongodb://admin:password1@ds031947.mlab.com:31947/eskill-test'
 const conn = mongoose.createConnection(mongoURI)
 let gfs
 
@@ -19,15 +19,21 @@ conn.once('open', () => {
   gfs.collection('questions')
 })
 
-const storage = multer.diskStorage({
-  url: mongoURI,
+let storage = new GridFsStorage({
+  url: 'mongodb://admin:password1@ds031947.mlab.com:31947/eskill-test',
   file: (req, file) => {
     return new Promise((resolve, reject) => {
-      crypto.randomBytes(16, (err, buf) => {
+      crypto.randomBytes(16, async (err, buf) => {
         if (err) {
           return reject(err)
         }
-        const filename = buf.toString('hex') + path.extname(file.originalname)
+        let n = await Question.countDocuments({
+          branch: req.body.branch,
+          course: req.body.course
+        }).exec()
+
+        const filename = `${req.body.branch}_${req.body.course}_${n}`
+        console.log(req.body)
         const fileInfo = {
           filename: filename,
           bucketName: 'questions'
@@ -38,13 +44,17 @@ const storage = multer.diskStorage({
   }
 })
 
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 1000000 },
-  fileFilter: function (req, file, cb) {
-    checkFileType(file, cb)
-  }
-}).single('Image')
+let upload = null
+
+storage.on('connection', db => {
+  upload = multer({
+    storage: storage,
+    limits: { fileSize: 1000000 },
+    fileFilter: function (req, file, cb) {
+      checkFileType(file, cb)
+    }
+  }).single('Image')
+})
 
 function checkFileType (file, cb) {
   const ficonstypes = /jpeg|jpg|png|gif/
@@ -62,21 +72,32 @@ function checkFileType (file, cb) {
   }
 }
 
-router.post('/addQuestion', function (req, res) {
-  let { branch, course, title, definition, n, answer } = req.body
-  upload(req, res, err => {
+router.post('/addQuestion', async function (req, res) {
+  upload(req, res, async err => {
+    let n = await Question.countDocuments({
+      branch: req.body.branch,
+      course: req.body.course
+    }).exec()
     let question = new Question({
       branch: req.body.branch,
       course: req.body.course,
       title: req.body.title,
-      definition: req.body.title,
-      n: req.body.n,
+      definition: req.body.definition,
+      n: n,
       answer: req.body.answer,
-      Image: req.file.path
+      image: `${req.body.branch}_${req.body.course}_${n}`
     })
-    res.sendStatus(200)
-    question.save()
+    question.save(err => {
+      res.sendStatus(200)
+    })
   })
+})
+
+router.get('/questions/:branch/:course', async (req, res) => {
+  try {
+    let questions = await Question.find(req.params)
+    res.json({ success: true, questions })
+  } catch (err) {}
 })
 
 module.exports = router

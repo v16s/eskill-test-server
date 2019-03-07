@@ -84,15 +84,44 @@ router.post('/addQuestion', async function (req, res) {
       title: req.body.title,
       definition: req.body.definition,
       n: n,
-      answer: req.body.answer,
-      image: `${req.body.branch}_${req.body.course}_${n}`
+      answer: req.body.answer
     })
     question.save(err => {
       res.sendStatus(200)
     })
   })
 })
+router.get('/question/:branch/:course/:n/image', async (req, res) => {
+  try {
+    let { branch, course, n } = req.params
+    gfs.files.findOne({ filename: `${branch}_${course}_${n}` }, (err, file) => {
+      if (
+        file &&
+        (file.contentType === 'image/jpeg' ||
+          file.contentType === 'image/png' ||
+          file.contentType === 'image/jpg')
+      ) {
+        // Read output to browser
+        const readstream = gfs.createReadStream(file.filename)
 
+        readstream.pipe(res)
+      } else {
+        res.status(400).send({ success: false, err: 'image not found' })
+      }
+    })
+  } catch (err) {
+    console.log(err)
+  }
+})
+router.get('/question/:branch/:course/:n', async (req, res) => {
+  try {
+    let { branch, course, n } = req.params
+    let question = await Question.findOne({ branch, course, n })
+    res.json(question)
+  } catch (err) {
+    console.log(err)
+  }
+})
 router.get('/questions/:branch/:course', async (req, res) => {
   try {
     let questions = await Question.find(req.params)

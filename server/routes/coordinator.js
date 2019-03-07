@@ -132,26 +132,32 @@ router.get('/questions/:branch/:course', async (req, res) => {
 router.post('/editQuestion', async (req, res) => {
   let { branch, course, n, title, definition, answer } = req.body
   try {
-    Question.files.deleteOne({ filename: `${branch}_${course}_${n}` })
-    Question.chunks.deleteOne({ filename: `${branch}_${course}_${n}` })
-    upload(req, res, async err => {
-      let n = await Question.countDocuments({
-        branch: req.body.branch,
-        course: req.body.course
-      }).exec()
-      let question = new Question({
-        branch: req.body.branch,
-        course: req.body.course,
-        title: req.body.title,
-        definition: req.body.definition,
-        n: n,
-        answer: req.body.answer
-      })
-      question.save(err => {
-        res.sendStatus(200)
-      })
-    })
+    gfs.deleteOne(
+      {
+        filename: `${branch}_${course}_${n}`
+      },
+      function (err, gridStore) {
+        if (err) return handleError(err)
+        console.log('success')
+        upload(req, res, async err => {
+          let n = await Question.countDocuments({
+            branch: req.body.branch,
+            course: req.body.course
+          }).exec()
+          let question = new Question({
+            branch: req.body.branch,
+            course: req.body.course,
+            title: req.body.title,
+            definition: req.body.definition,
+            n: n,
+            answer: req.body.answer
+          })
+          question.save(err => {
+            res.sendStatus(200)
+          })
+        })
+      }
+    )
   } catch (err) {}
 })
-
 module.exports = router

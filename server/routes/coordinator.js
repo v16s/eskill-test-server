@@ -4,56 +4,87 @@ const multer = require('multer')
 const router = require('express').Router()
 const path = require('path')
 const { Question } = require('../models')
-const crypto = require('crypto')
 const GridFsStorage = require('multer-gridfs-storage')
-const Grid = require('gridfs-stream')
-const methodOverride = require('method-override')
-router.use(express.static('./public'))
-
-const mongoURI = 'mongodb://admin:password1@ds031947.mlab.com:31947/eskill-test'
-const conn = mongoose.createConnection(mongoURI)
 let gfs
+router.use(express.static('./public'))
+const FileSchema = new mongoose.Schema(
+  {},
+  { strict: false, collection: 'questions.files' }
+)
+const File = mongoose.model('File', FileSchema, 'questions.files')
 
-conn.once('open', () => {
-  gfs = Grid(conn.db, mongoose.mongo)
-  gfs.collection('questions')
+mongoose.connection.on('open', () => {
+  gfs = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
+    chunkSizeBytes: 1024,
+    bucketName: 'questions'
+  })
 })
 
 let storage = new GridFsStorage({
   url: 'mongodb://admin:password1@ds031947.mlab.com:31947/eskill-test',
   file: (req, file) => {
-    return new Promise((resolve, reject) => {
-      crypto.randomBytes(16, async (err, buf) => {
-        if (err) {
-          return reject(err)
-        }
-        let n = await Question.countDocuments({
-          branch: req.body.branch,
-          course: req.body.course
-        }).exec()
+    return new Promise(async (resolve, reject) => {
+      let n = await Question.countDocuments({
+        branch: req.body.branch,
+        course: req.body.course
+      }).exec()
 
-        const filename = `${req.body.branch}_${req.body.course}_${n}`
-        console.log(req.body)
-        const fileInfo = {
-          filename: filename,
-          bucketName: 'questions'
+      const filename = `${req.body.branch}_${req.body.course}_${n}`
+      console.log(req.body)
+      const fileInfo = {
+        filename: filename,
+        bucketName: 'questions'
+      }
+      resolve(fileInfo)
+    })
+  }
+})
+let edit = new GridFsStorage({
+  url: 'mongodb://admin:password1@ds031947.mlab.com:31947/eskill-test',
+  file: (req, file) => {
+    return new Promise(async (resolve, reject) => {
+      let { n, branch, course } = req.body
+      const filename = `${branch}_${course}_${n}`
+      const fileInfo = {
+        filename: filename,
+        bucketName: 'questions'
+      }
+      try {
+        let file = await File.findOne({ filename })
+        if (file) {
+          gfs.delete(file._id, err => {
+            resolve(fileInfo)
+          })
         }
         resolve(fileInfo)
-      })
+      } catch (err) {
+        console.log(err)
+        reject(err)
+      }
     })
   }
 })
 
 let upload = null
 
+let editupload = null
+
 storage.on('connection', db => {
+  console.log('connected')
   upload = multer({
     storage: storage,
     limits: { fileSize: 1000000 },
     fileFilter: function (req, file, cb) {
       checkFileType(file, cb)
     }
-  }).single('Image')
+  }).single('image')
+  editupload = multer({
+    storage: edit,
+    limits: { fileSize: 1000000 },
+    fileFilter: function (req, file, cb) {
+      checkFileType(file, cb)
+    }
+  }).single('image')
 })
 
 function checkFileType (file, cb) {
@@ -79,12 +110,8 @@ router.post('/addQuestion', async function (req, res) {
       course: req.body.course
     }).exec()
     let question = new Question({
-      branch: req.body.branch,
-      course: req.body.course,
-      title: req.body.title,
-      definition: req.body.definition,
-      n: n,
-      answer: req.body.answer
+      ...req.body,
+      n: n
     })
     question.save(err => {
       res.sendStatus(200)
@@ -92,23 +119,10 @@ router.post('/addQuestion', async function (req, res) {
   })
 })
 router.get('/question/:branch/:course/:n/image', async (req, res) => {
+  let filename = `${req.params.branch}_${req.params.course}_${req.params.n}`
   try {
-    let { branch, course, n } = req.params
-    gfs.files.findOne({ filename: `${branch}_${course}_${n}` }, (err, file) => {
-      if (
-        file &&
-        (file.contentType === 'image/jpeg' ||
-          file.contentType === 'image/png' ||
-          file.contentType === 'image/jpg')
-      ) {
-        // Read output to browser
-        const readstream = gfs.createReadStream(file.filename)
-
-        readstream.pipe(res)
-      } else {
-        res.status(400).send({ success: false, err: 'image not found' })
-      }
-    })
+    let { _id } = await File.findOne({ filename })
+    gfs.openDownloadStream(_id).pipe(res)
   } catch (err) {
     console.log(err)
   }
@@ -130,34 +144,13 @@ router.get('/questions/:branch/:course', async (req, res) => {
 })
 
 router.post('/editQuestion', async (req, res) => {
-  let { branch, course, n, title, definition, answer } = req.body
-  try {
-    gfs.deleteOne(
-      {
-        filename: `${branch}_${course}_${n}`
-      },
-      function (err, gridStore) {
-        if (err) return handleError(err)
-        console.log('success')
-        upload(req, res, async err => {
-          let n = await Question.countDocuments({
-            branch: req.body.branch,
-            course: req.body.course
-          }).exec()
-          let question = new Question({
-            branch: req.body.branch,
-            course: req.body.course,
-            title: req.body.title,
-            definition: req.body.definition,
-            n: n,
-            answer: req.body.answer
-          })
-          question.save(err => {
-            res.sendStatus(200)
-          })
-        })
-      }
+  editupload(req, res, async err => {
+    let question = await Question.findOneAndUpdate(
+      { branch: req.body.branch, course: req.body.course, n: req.body.n },
+      req.body,
+      { new: true }
     )
-  } catch (err) {}
+    res.json({ success: true, question })
+  })
 })
 module.exports = router

@@ -29,8 +29,7 @@ let storage = new GridFsStorage({
         course: req.body.course
       }).exec()
 
-      const filename = `${req.body.branch}_${req.body.course}_${n}`
-      console.log(req.body)
+      const filename = `${req.body.branch}_${req.body.course}_${n}`(req.body)
       const fileInfo = {
         filename: filename,
         bucketName: 'questions'
@@ -58,7 +57,7 @@ let edit = new GridFsStorage({
         }
         resolve(fileInfo)
       } catch (err) {
-        console.log(err)
+        err
         reject(err)
       }
     })
@@ -70,7 +69,7 @@ let upload = null
 let editupload = null
 
 storage.on('connection', db => {
-  console.log('connected')
+  ;('connected')
   upload = multer({
     storage: storage,
     limits: { fileSize: 1000000 },
@@ -124,7 +123,7 @@ router.get('/question/:branch/:course/:n/image', async (req, res) => {
     let { _id } = await File.findOne({ filename })
     gfs.openDownloadStream(_id).pipe(res)
   } catch (err) {
-    console.log(err)
+    err
   }
 })
 router.get('/question/:branch/:course/:n', async (req, res) => {
@@ -133,7 +132,7 @@ router.get('/question/:branch/:course/:n', async (req, res) => {
     let question = await Question.findOne({ branch, course, n })
     res.json(question)
   } catch (err) {
-    console.log(err)
+    err
   }
 })
 router.get('/questions/:branch/:course', async (req, res) => {
@@ -153,4 +152,29 @@ router.post('/editQuestion', async (req, res) => {
     res.json({ success: true, question })
   })
 })
+
+router.post('/deleteQuestion', async (req, res) => {
+  let { branch, course, n } = req.body
+  let file = await File.findOne({
+    filename: `${req.body.branch}_${req.body.course}_${req.body.n}`
+  })
+  if (file) {
+    gfs.delete(file._id, async err => {
+      let question = await Question.deleteOne({
+        branch: req.body.branch,
+        course: req.body.course,
+        n: req.body.n
+      })
+      res.sendStatus(200)
+    })
+  } else {
+    let question = await Question.deleteOne({
+      branch: req.body.branch,
+      course: req.body.course,
+      n: req.body.n
+    })
+    res.sendStatus(200)
+  }
+})
+
 module.exports = router

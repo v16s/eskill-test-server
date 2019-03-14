@@ -24,17 +24,27 @@ let storage = new GridFsStorage({
   url: 'mongodb://admin:password1@ds031947.mlab.com:31947/eskill-test',
   file: (req, file) => {
     return new Promise(async (resolve, reject) => {
-      let n = await Question.countDocuments({
-        branch: req.body.branch,
-        course: req.body.course
-      }).exec()
-
-      const filename = `${req.body.branch}_${req.body.course}_${n}`(req.body)
-      const fileInfo = {
-        filename: filename,
-        bucketName: 'questions'
+      try {
+        let n = await Question.countDocuments({
+          branch: req.body.branch,
+          course: req.body.course
+        }).exec()
+        let question = new Question({
+          ...req.body,
+          n: n,
+          options: JSON.parse(req.body.options),
+          answer: parseInt(req.body.answer)
+        })
+        await question.save()
+        const filename = `${req.body.branch}_${req.body.course}_${n}`
+        const fileInfo = {
+          filename: filename,
+          bucketName: 'questions'
+        }
+        resolve(fileInfo)
+      } catch (err) {
+        reject(err)
       }
-      resolve(fileInfo)
     })
   }
 })
@@ -104,17 +114,11 @@ function checkFileType (file, cb) {
 
 router.post('/addQuestion', async function (req, res) {
   upload(req, res, async err => {
-    let n = await Question.countDocuments({
-      branch: req.body.branch,
-      course: req.body.course
-    }).exec()
-    let question = new Question({
-      ...req.body,
-      n: n
-    })
-    question.save(err => {
-      res.sendStatus(200)
-    })
+    if (err) {
+      res.status(400).send({ success: false, err })
+    } else {
+      res.status(200).send({ success: true })
+    }
   })
 })
 router.get('/question/:branch/:course/:n/image', async (req, res) => {

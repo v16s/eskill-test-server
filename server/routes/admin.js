@@ -186,7 +186,6 @@ router.get('/reports/:testID', async (req, res) => {
   }
 })
 
-
 router.post('/createTest', function (req, res) {
   User.findOne({ regNumber: req.user.regNumber }, async (err, _user) => {
     let _test = new Test(req.body)
@@ -196,20 +195,19 @@ router.post('/createTest', function (req, res) {
       console.log(_user.tests)
       let test = await _test.save()
       let user = await _user.save()
-      let reports = await Report.insertMany(
+      let reports = await Report.create(
         Array.from(Array(parseInt(req.body.number))).map((k, i) => {
           return {
             ...req.body,
             questions: [],
             nquestions: req.body.questions,
-            username: `${req.body.testID.replace(
-              / /g,
-              "_"
-            )}_${i}`,
+            username: `${req.body.testID.replace(/ /g, '_')}_${i}`,
             password: Math.random()
               .toString(36)
               .replace(/[^a-z]+/g, '')
-              .substr(0, 5)
+              .substr(0, 5),
+            campus: req.user.campus,
+            department: req.user.department
           }
         })
       )
@@ -221,13 +219,18 @@ router.post('/createTest', function (req, res) {
 })
 
 router.post('/addstudent', function (req, res) {
-  
-    Report.findOne({}, async (err, rep) => {
+  Report.findOne(
+    {
+      testID: req.body.testID,
+      branch: req.body.branch,
+      course: req.body.course
+    },
+    async (err, rep) => {
       username = rep.username.split('_')
       username.reverse()
       let count = parseInt(username[0])
       try {
-        await Report.insertMany(
+        await Report.create(
           Array.from(Array(parseInt(req.body.number))).map((k, i) => {
             return {
               branch: rep.branch,
@@ -236,10 +239,11 @@ router.post('/addstudent', function (req, res) {
               nquestions: rep.nquestions,
               time: rep.time,
               questions: [],
-              username: `${req.body.testID.replace(
-                / /g,
-                "_"
-              )}_${i + count + 1}`,
+              campus: req.user.campus,
+              department: req.user.department,
+              username: `${req.body.testID.replace(/ /g, '_')}_${i +
+                count +
+                1}`,
               password: Math.random()
                 .toString(36)
                 .replace(/[^a-z]+/g, '')
@@ -252,9 +256,10 @@ router.post('/addstudent', function (req, res) {
         console.log(err)
         res.json({ success: false, err })
       }
-    })
-      .limit(1)
-      .sort({ $natural: -1 })
+    }
+  )
+    .limit(1)
+    .sort({ $natural: -1 })
 })
 /**
  * coordinator = 1

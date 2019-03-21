@@ -14,38 +14,46 @@ router.get('/tests', (req, res) => {
   )
 })
 router.post('/addstudent', function (req, res) {
-  
-  Report.findOne({}, async (err, rep) => {
-    username = rep.username.split('_')
-    username.reverse()
-    let count = parseInt(username[0])
-    try {
-      await Report.insertMany(
-        Array.from(Array(parseInt(req.body.number))).map((k, i) => {
-          return {
-            branch: rep.branch,
-            testID: rep.testID,
-            course: rep.course,
-            nquestions: rep.nquestions,
-            time: rep.time,
-            questions: [],
-            username: `${req.body.testID.replace(
-              / /g,
-              "_"
-            )}_${i + count + 1}`,
-            password: Math.random()
-              .toString(36)
-              .replace(/[^a-z]+/g, '')
-              .substr(0, 5)
-          }
-        })
-      )
-      res.json({ success: true })
-    } catch (err) {
-      console.log(err)
-      res.json({ success: false, err })
+  Report.findOne(
+    {
+      testID: req.body.testID
+    },
+    async (err, rep) => {
+      let username = rep ? rep.username.split('_') : ['']
+      username.reverse()
+      let count = rep ? parseInt(username[0]) : 0
+      if (!rep) {
+        rep = await Test.findOne({ testID: req.body.testID })
+      }
+      try {
+        await Report.create(
+          Array.from(Array(parseInt(req.body.number))).map((k, i) => {
+            return {
+              branch: rep.branch,
+              testID: rep.testID,
+              course: rep.course,
+              nquestions: rep.nquestions,
+              time: rep.time,
+              questions: [],
+              campus: req.user.campus,
+              department: req.user.department,
+              username: `${req.body.testID.replace(/ /g, '_')}_${i +
+                count +
+                1}`,
+              password: Math.random()
+                .toString(36)
+                .replace(/[^a-z]+/g, '')
+                .substr(0, 5)
+            }
+          })
+        )
+        res.json({ success: true })
+      } catch (err) {
+        console.log(err)
+        res.json({ success: false, err })
+      }
     }
-  })
+  )
     .limit(1)
     .sort({ $natural: -1 })
 })

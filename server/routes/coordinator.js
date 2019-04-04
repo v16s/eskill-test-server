@@ -113,13 +113,32 @@ function checkFileType (file, cb) {
 }
 
 router.post('/addQuestion', async function (req, res) {
-  upload(req, res, async err => {
-    if (err) {
-      res.status(400).send({ success: false, err })
-    } else {
+  if (req.headers['content-type'].includes('application/json')) {
+    try {
+      let n = await Question.countDocuments({
+        branch: req.body.branch,
+        course: req.body.course
+      }).exec()
+      let question = new Question({
+        ...req.body,
+        n: n,
+        options: JSON.parse(req.body.options),
+        answer: parseInt(req.body.answer)
+      })
+      await question.save()
       res.status(200).send({ success: true })
+    } catch (err) {
+      res.status(400).send({ success: false, err })
     }
-  })
+  } else {
+    upload(req, res, async err => {
+      if (err) {
+        res.status(400).send({ success: false, err })
+      } else {
+        res.status(200).send({ success: true })
+      }
+    })
+  }
 })
 router.get('/question/:branch/:course/:n/image', async (req, res) => {
   let filename = `${req.params.branch}_${req.params.course}_${req.params.n}`

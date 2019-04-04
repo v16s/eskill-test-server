@@ -313,19 +313,21 @@ router.post('/updatepassword', function (req, res) {
   })
 })
 
-router.post('/endtest', function (req, res) {
-  Report.findOne(
-    { username: req.body.username, testID: req.body.testID },
-    async (err, user) => {
-      user.status = 2
-      user.save(function (err, user) {
-        if (err) {
-          return res.json({ success: false, msg: err })
-        }
-        res.json({ success: true, user: user })
-      })
-    }
-  )
+router.post('/endtest', async function (req, res) {
+  try {
+    let { testID, course, branch } = req.body
+    let test = await Test.findOne({ testID, course, branch })
+    test.status = 1
+    await test.save()
+    let students = await Report.find({ testID, course, branch })
+    students.map(async s => {
+      s.status = 2
+      await s.save()
+    })
+    res.status(200).send({ success: true })
+  } catch (err) {
+    res.status(400).send({ err })
+  }
 })
 
 module.exports = router

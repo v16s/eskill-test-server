@@ -1,6 +1,7 @@
 let router = require('express').Router()
 let mongoose = require('mongoose')
-let { Report, Question } = require('../models')
+let { Report, Question, File } = require('../models')
+
 let gfs
 mongoose.connection.on('open', () => {
   gfs = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
@@ -21,13 +22,25 @@ router.get('/time', (req, res) => {
     }
   })
 })
+
 router.get('/question/:branch/:course/:n/image', async (req, res) => {
   let filename = `${req.params.branch}_${req.params.course}_${req.params.n}`
   try {
+    console.log(filename)
     let { _id } = await File.findOne({ filename })
-    gfs.openDownloadStream(_id).pipe(res)
+    let stream = gfs.openDownloadStream(_id)
+    let chunks = []
+    stream.on('data', function (chunk) {
+      chunks.push(chunk)
+      console.log('chunk:', chunk.length)
+    })
+    stream.on('end', function () {
+      var result = Buffer.concat(chunks)
+      console.log('final result:', result.length)
+      res.send({ image: result.toString('base64') })
+    })
   } catch (err) {
-    err
+    res.send('none')
   }
 })
 router.get('/question/:branch/:course/:n', async (req, res) => {

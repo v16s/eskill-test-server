@@ -3,16 +3,10 @@ const mongoose = require('mongoose')
 const multer = require('multer')
 const router = require('express').Router()
 const path = require('path')
-const { Question } = require('../models')
+const { Question, File } = require('../models')
 const GridFsStorage = require('multer-gridfs-storage')
 let gfs
 router.use(express.static('./public'))
-const FileSchema = new mongoose.Schema(
-  {},
-  { strict: false, collection: 'questions.files' }
-)
-const File = mongoose.model('File', FileSchema, 'questions.files')
-
 mongoose.connection.on('open', () => {
   gfs = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
     chunkSizeBytes: 1024,
@@ -43,6 +37,7 @@ let storage = new GridFsStorage({
         }
         resolve(fileInfo)
       } catch (err) {
+        console.log(err)
         reject(err)
       }
     })

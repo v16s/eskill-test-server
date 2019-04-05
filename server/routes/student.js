@@ -43,6 +43,17 @@ router.get('/question/:branch/:course/:n/image', async (req, res) => {
     res.send('none')
   }
 })
+router.post('/update', async (req, res) => {
+  try {
+    let { username, questions } = req.body
+    let student = await Report.findOne({ username })
+    student.questions = questions
+    await student.save()
+    res.status(200).send({ success: true, questions })
+  } catch (err) {
+    res.status(400).send({ success: false, err })
+  }
+})
 router.get('/question/:branch/:course/:n', async (req, res) => {
   try {
     let { branch, course, n } = req.params

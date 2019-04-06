@@ -48,7 +48,10 @@ let edit = new GridFsStorage({
   file: (req, file) => {
     return new Promise(async (resolve, reject) => {
       let { n, branch, course } = req.body
+      console.log(branch, course, n)
+      n = parseInt(n)
       const filename = `${branch}_${course}_${n}`
+      console.log(filename)
       const fileInfo = {
         filename: filename,
         bucketName: 'questions'
@@ -56,19 +59,69 @@ let edit = new GridFsStorage({
       try {
         let file = await File.findOne({ filename })
         if (file) {
-          gfs.delete(file._id, err => {
+          gfs.delete(file._id, async err => {
+            console.log(err)
+            let question = await Question.findOne({
+              branch,
+              course,
+              n
+            })
+            question = {
+              ...question.toObject(),
+              ...req.body,
+              options: JSON.parse(req.body.options)
+            }
+            await Question.findOneAndUpdate(
+              {
+                branch,
+                course,
+                n
+              },
+              question
+            )
             resolve(fileInfo)
           })
+        } else {
+          let question = await Question.findOne({
+            branch,
+            course,
+            n
+          })
+          question = {
+            ...question.toObject(),
+            ...req.body,
+            options: JSON.parse(req.body.options)
+          }
+          await Question.findOneAndUpdate(
+            {
+              branch,
+              course,
+              n
+            },
+            question
+          )
+          resolve(fileInfo)
         }
-        resolve(fileInfo)
       } catch (err) {
-        err
         reject(err)
       }
     })
   }
 })
-
+let del = filename => {
+  console.log(filename)
+  return new Promise(async (resolve, reject) => {
+    let file = await File.findOne({ filename })
+    if (file) {
+      gfs.delete(file._id, err => {
+        console.log('deleting')
+        resolve()
+      })
+    } else {
+      reject()
+    }
+  })
+}
 let upload = null
 
 let editupload = null
@@ -139,9 +192,18 @@ router.get('/question/:branch/:course/:n/image', async (req, res) => {
   let filename = `${req.params.branch}_${req.params.course}_${req.params.n}`
   try {
     let { _id } = await File.findOne({ filename })
-    gfs.openDownloadStream(_id).pipe(res)
+    let stream = gfs.openDownloadStream(_id)
+    let chunks = []
+    stream.on('data', function (chunk) {
+      chunks.push(chunk)
+    })
+    stream.on('end', function () {
+      var result = Buffer.concat(chunks)
+      console.log('final result:', result.length)
+      res.send({ image: result.toString('base64') })
+    })
   } catch (err) {
-    err
+    res.send('none')
   }
 })
 router.get('/question/:branch/:course/:n', async (req, res) => {
@@ -163,23 +225,38 @@ router.get('/questions/:branch/:course', async (req, res) => {
 router.post('/editQuestion', async (req, res) => {
   if (req.headers['content-type'].includes('application/json')) {
     try {
-      let question = await Question.findOneAndUpdate(
-        { branch: req.body.branch, course: req.body.course, n: req.body.n },
-        req.body,
-        { new: true }
+      let question = await Question.findOne({
+        branch: req.body.branch,
+        course: req.body.course,
+        n: req.body.n
+      })
+      question = {
+        ...question.toObject(),
+        ...req.body,
+        options: JSON.parse(req.body.options)
+      }
+      await Question.findOneAndUpdate(
+        {
+          branch: req.body.branch,
+          course: req.body.course,
+          n: req.body.n
+        },
+        question
       )
+      if (req.body.del) {
+        let filename = `${req.body.branch}_${req.body.course}_${req.body.n}`
+        console.log(filename)
+        await del(filename)
+      }
       res.json({ success: true, question })
     } catch (err) {
+      console.log(err)
       res.status(400).send({ success: false, err })
     }
   } else {
     editupload(req, res, async err => {
-      let question = await Question.findOneAndUpdate(
-        { branch: req.body.branch, course: req.body.course, n: req.body.n },
-        req.body,
-        { new: true }
-      )
-      res.json({ success: true, question })
+      console.log(err)
+      res.json({ success: true })
     })
   }
 })

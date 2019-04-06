@@ -161,14 +161,27 @@ router.get('/questions/:branch/:course', async (req, res) => {
 })
 
 router.post('/editQuestion', async (req, res) => {
-  editupload(req, res, async err => {
-    let question = await Question.findOneAndUpdate(
-      { branch: req.body.branch, course: req.body.course, n: req.body.n },
-      req.body,
-      { new: true }
-    )
-    res.json({ success: true, question })
-  })
+  if (req.headers['content-type'].includes('application/json')) {
+    try {
+      let question = await Question.findOneAndUpdate(
+        { branch: req.body.branch, course: req.body.course, n: req.body.n },
+        req.body,
+        { new: true }
+      )
+      res.json({ success: true, question })
+    } catch (err) {
+      res.status(400).send({ success: false, err })
+    }
+  } else {
+    editupload(req, res, async err => {
+      let question = await Question.findOneAndUpdate(
+        { branch: req.body.branch, course: req.body.course, n: req.body.n },
+        req.body,
+        { new: true }
+      )
+      res.json({ success: true, question })
+    })
+  }
 })
 
 router.post('/deleteQuestion', async (req, res) => {

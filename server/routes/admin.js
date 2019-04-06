@@ -321,7 +321,7 @@ router.post('/endtest', async function (req, res) {
     await test.save()
     let students = await Report.find({ testID, course, branch })
     students.map(async s => {
-      s.status = 2
+      s.status = 1
       await s.save()
     })
     res.status(200).send({ success: true })

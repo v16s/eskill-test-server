@@ -90,4 +90,16 @@ router.post('/edit', async (req, res) => {
     res.status(400).json({ success: false, err })
   }
 })
+
+router.post('/endtest', async function (req, res) {
+  try {
+    let { username, course, branch } = req.body
+    let student = await Report.findOne({ username, course, branch })
+    student.status = 1
+    await student.save()
+    res.status(200).send({ success: true })
+  } catch (err) {
+    res.status(400).send({ err })
+  }
+})
 module.exports = router

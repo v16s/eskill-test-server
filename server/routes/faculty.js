@@ -1,5 +1,5 @@
 let router = require('express').Router()
-let { Report, Branch, Test, User } = require('../models')
+let { Report, Test, Question } = require('../models')
 
 router.get('/tests', (req, res) => {
   Test.find(
@@ -21,9 +21,11 @@ router.post('/addstudent', function (req, res) {
     async (err, rep) => {
       let username = rep ? rep.username.split('_') : ['']
       username.reverse()
+      let nq = rep.nquestions
       let count = rep ? parseInt(username[0]) : 0
       if (!rep) {
         rep = await Test.findOne({ testID: req.body.testID })
+        nq = rep.questions
       }
       try {
         await Report.create(
@@ -32,7 +34,7 @@ router.post('/addstudent', function (req, res) {
               branch: rep.branch,
               testID: rep.testID,
               course: rep.course,
-              nquestions: rep.questions,
+              nquestions: nq,
               time: rep.time,
               questions: [],
               campus: req.user.campus,
@@ -66,7 +68,10 @@ router.get('/reports/:testID', async (req, res) => {
     res.json({ success: false, err })
   }
 })
-
+router.post('/answer', async (req, res) => {
+  let q = await Question.findOne(req.body)
+  res.json({ a: q.answer })
+})
 router.post('/removestudent', function (req, res) {
   Report.deleteOne({ username: req.body.username }, async err => {
     if (err) {

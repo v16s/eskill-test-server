@@ -40,7 +40,6 @@ const Report = new Schema({
 })
 
 Report.pre('save', async function (next) {
-  let report = this
   if (this.isNew) {
     let nq = await Question.countDocuments({
       branch: this.branch,

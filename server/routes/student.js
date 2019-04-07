@@ -58,7 +58,7 @@ router.get('/question/:branch/:course/:n', async (req, res) => {
   try {
     let { branch, course, n } = req.params
     let question = await Question.findOne({ branch, course, n })
-    res.json(question)
+    res.json({ ...question, answer: undefined })
   } catch (err) {
     err
   }

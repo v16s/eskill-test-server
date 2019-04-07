@@ -32,7 +32,7 @@ router.post('/addstudent', function (req, res) {
               branch: rep.branch,
               testID: rep.testID,
               course: rep.course,
-              nquestions: rep.nquestions,
+              nquestions: rep.questions,
               time: rep.time,
               questions: [],
               campus: req.user.campus,

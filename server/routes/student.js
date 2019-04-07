@@ -40,6 +40,7 @@ router.get('/question/:branch/:course/:n/image', async (req, res) => {
       res.send({ image: result.toString('base64') })
     })
   } catch (err) {
+    console.log(err)
     res.send('none')
   }
 })
@@ -58,9 +59,11 @@ router.get('/question/:branch/:course/:n', async (req, res) => {
   try {
     let { branch, course, n } = req.params
     let question = await Question.findOne({ branch, course, n })
-    res.json({ ...question, answer: undefined })
+    console.log(question)
+    res.json({ ...question.toObject(), answer: undefined })
   } catch (err) {
-    err
+    console.log(err)
+    res.status(400).send({ err })
   }
 })
 router.post('/updatetime', async (req, res) => {

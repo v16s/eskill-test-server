@@ -46,6 +46,10 @@ Report.pre('save', async function (next) {
       branch: this.branch,
       course: this.course
     })
+    if (this.nquestions <= nq) {
+      nq = this.nquestions
+    }
+    console.log(nq, this.nquestions)
     let array = Array.from(Array(parseInt(nq))).map((k, i) => {
       return {
         n: i,

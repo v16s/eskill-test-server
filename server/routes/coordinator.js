@@ -262,26 +262,29 @@ router.post('/editQuestion', async (req, res) => {
 })
 
 router.post('/deleteQuestion', async (req, res) => {
-  let { branch, course, n } = req.body
-  let file = await File.findOne({
-    filename: `${req.body.branch}_${req.body.course}_${req.body.n}`
-  })
-  if (file) {
-    gfs.delete(file._id, async err => {
+  try {
+    let file = await File.findOne({
+      filename: `${req.body.branch}_${req.body.course}_${req.body.n}`
+    })
+    if (file) {
+      gfs.delete(file._id, async err => {
+        let question = await Question.deleteOne({
+          branch: req.body.branch,
+          course: req.body.course,
+          n: req.body.n
+        })
+        res.sendStatus(200)
+      })
+    } else {
       let question = await Question.deleteOne({
         branch: req.body.branch,
         course: req.body.course,
         n: req.body.n
       })
       res.sendStatus(200)
-    })
-  } else {
-    let question = await Question.deleteOne({
-      branch: req.body.branch,
-      course: req.body.course,
-      n: req.body.n
-    })
-    res.sendStatus(200)
+    }
+  } catch (err) {
+    res.sendStatus(400)
   }
 })
 
